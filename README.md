@@ -4,6 +4,22 @@
 
 An advanced, real-time AI-powered Fraud Detection System (FDS) and Explainable Neural Risk Intelligence Engine. This project is built specifically to address **Track 1, Problem Statement 2** of the Hackathon.
 
+## 📸 Screenshots
+
+### Operations Feed — Live Transaction Monitoring
+![Operations Feed](screenshots/operations-feed.png)
+
+### Threat Intelligence & GNN Subgraph
+![Threat Intelligence & GNN](screenshots/threat-intelligence-gnn.png)
+
+### Feedback-Driven Retraining Pipeline
+![Feedback Retraining](screenshots/feedback-retraining.png)
+
+### Governance & Data Drift Monitoring
+![Governance & Data Drift](screenshots/governance-data-drift.png)
+
+---
+
 ## Quick Start for the Jury
 
 You can run and test this project in **two ways** depending on your environment. Both modes are fully functional and interactive:

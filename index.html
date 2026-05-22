@@ -724,7 +724,7 @@
       const [apiLatency, setApiLatency] = useState(0);
       const [tabCode, setTabCode] = useState("fastapi");
       const [activePipelineStep, setActivePipelineStep] = useState(0);
-      const [apiBaseUrl, setApiBaseUrl] = useState(() => localStorage.getItem("shield_api_base") || "http://localhost:8000");
+      const [apiBaseUrl, setApiBaseUrl] = useState(() => localStorage.getItem("shield_api_base") || "https://graceful-blessing-production.up.railway.app");
 
       // API Logging & Metrics Verification State
       const [apiLogs, setApiLogs] = useState([

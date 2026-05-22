@@ -1,5 +1,7 @@
 # Shield Fraud Operations Console
 
+🔗 **Live Demo**: [https://fraud-nu.vercel.app/](https://fraud-nu.vercel.app/)
+
 An advanced, real-time AI-powered Fraud Detection System (FDS) and Explainable Neural Risk Intelligence Engine. This project is built specifically to address **Track 1, Problem Statement 2** of the Hackathon.
 
 ## Quick Start for the Jury

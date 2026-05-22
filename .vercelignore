@@ -1,0 +1,13 @@
+# Ignore Python backend source code
+server/
+
+# Ignore local config/containers
+docker-compose.yml
+kubernetes.yml
+.git/
+.gitignore
+
+# Ignore miscellaneous files
+ZYNEX-Software.pdf
+pdf_text.txt
+shield-fraud-detection-dashboard.zip

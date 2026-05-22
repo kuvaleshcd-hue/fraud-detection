@@ -1,0 +1,13 @@
+{
+  "name": "shield-fraud-backend-express",
+  "version": "1.0.0",
+  "description": "Express.js implementation of Shield Fraud Detection Engine REST API",
+  "main": "app_express.js",
+  "scripts": {
+    "start": "node app_express.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5"
+  }
+}

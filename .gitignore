@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+ENV/
+.pytest_cache/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment variables
+.env
+.env.local
+
+# Large binaries or redundant project assets
+ZYNEX-Software.pdf
+pdf_text.txt
+shield-fraud-detection-dashboard.zip

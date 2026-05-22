@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shield-backend-deployment
+  labels:
+    app: shield-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: shield-backend
+  template:
+    metadata:
+      labels:
+        app: shield-backend
+    spec:
+      containers:
+      - name: shield-backend
+        image: shield-fraud-backend:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shield-backend-service
+spec:
+  selector:
+    app: shield-backend
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shield-frontend-deployment
+  labels:
+    app: shield-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: shield-frontend
+  template:
+    metadata:
+      labels:
+        app: shield-frontend
+    spec:
+      containers:
+      - name: shield-frontend
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: frontend-html
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: frontend-html
+        configMap:
+          name: shield-frontend-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shield-frontend-config
+data:
+  # In production, index.html is mounted via ConfigMap or baked into Nginx image.
+  index.html: |
+    <!-- The consolidated frontend dashboard code will be loaded here -->
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shield-frontend-service
+spec:
+  selector:
+    app: shield-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer

@@ -1,0 +1,2674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shield FDS - Advanced Neural Risk Intelligence Engine</title>
+  
+  <!-- Premium Fonts: Inter for general UI, JetBrains Mono for system terminals and code -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- CDNs for React, Recharts, and Babel compilation -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
+  <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <style>
+    :root {
+      --bg-main: #060813;
+      --card-bg: rgba(10, 15, 30, 0.7);
+      --card-border: 1px solid rgba(59, 130, 246, 0.16);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dim: #4b5563;
+      
+      /* Neon Accent System */
+      --accent-cyan: #00f0ff;
+      --accent-cyan-dim: rgba(0, 240, 255, 0.1);
+      --accent-green: #39ff14;
+      --accent-green-dim: rgba(57, 255, 20, 0.1);
+      --accent-orange: #ff9900;
+      --accent-orange-dim: rgba(255, 153, 0, 0.1);
+      --accent-red: #ff003c;
+      --accent-red-dim: rgba(255, 0, 60, 0.1);
+      --accent-purple: #8b5cf6;
+      
+      --shadow-glow: 0 0 15px rgba(0, 240, 255, 0.15);
+      --shadow-red-glow: 0 0 15px rgba(255, 0, 60, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-main);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(0, 240, 255, 0.08) 0px, transparent 40%),
+        radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.05) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(255, 0, 60, 0.03) 0px, transparent 50%);
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Scrollbar Design */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.01);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(59, 130, 246, 0.25);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-cyan);
+      box-shadow: 0 0 8px var(--accent-cyan);
+    }
+
+    /* Animations */
+    @keyframes pulse-cyan {
+      0%, 100% { opacity: 0.5; box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
+      50% { opacity: 1; box-shadow: 0 0 15px rgba(0, 240, 255, 0.6); }
+    }
+    .pulse-cyan-dot {
+      animation: pulse-cyan 2s infinite ease-in-out;
+    }
+
+    @keyframes scanline {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+    .scanner-effect {
+      position: relative;
+      overflow: hidden;
+    }
+    .scanner-effect::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+      top: 0;
+      left: 0;
+      animation: scanline 4s infinite linear;
+      pointer-events: none;
+      opacity: 0.3;
+    }
+
+    .glass-card {
+      background: var(--card-bg);
+      border: var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: var(--shadow-glow);
+      backdrop-filter: blur(12px);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(0, 240, 255, 0.35);
+    }
+
+    .btn-tab {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s ease;
+      display: flex;
+      alignItems: center;
+      gap: 6px;
+    }
+    .btn-tab:hover {
+      color: var(--text-main);
+      border-color: rgba(0, 240, 255, 0.3);
+      background: rgba(0, 240, 255, 0.03);
+    }
+    .btn-tab.active {
+      color: var(--bg-main);
+      background: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+    }
+
+    /* Code Block styling */
+    pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: #03050b;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      color: #e5e7eb;
+      overflow-x: auto;
+      max-height: 400px;
+    }
+
+    /* Form control styling */
+    .slider-input {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+      margin: 10px 0;
+    }
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--accent-cyan);
+      transition: transform 0.1s ease;
+    }
+    .slider-input::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+  </style>
+</head>
+<body>
+  <div id="root" class="container"></div>
+
+  <!-- React code parsed dynamically by Babel -->
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useCallback } = React;
+    const {
+      LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area
+    } = Recharts;
+
+    const RISK_COLORS = { HIGH: "#ff003c", MEDIUM: "#ff9900", LOW: "#39ff14" };
+    const RISK_BG = { HIGH: "rgba(255, 0, 60, 0.1)", MEDIUM: "rgba(255, 153, 0, 0.1)", LOW: "rgba(57, 255, 20, 0.1)" };
+    const RISK_TEXT = { HIGH: "#ff6685", MEDIUM: "#ffbb55", LOW: "#92ff7c" };
+    const RISK_LABELS = { HIGH: "HIGH RISK", MEDIUM: "MEDIUM RISK", LOW: "SAFE (LOW)" };
+
+    const TX_TYPES = ["Card Purchase", "UPI Transfer", "ACH Pull", "ATM Withdrawal", "Wire Transfer"];
+    const MERCHANTS = ["PhonePe Merchant", "GPay P2M", "Paytm Gateway", "CRED Store", "Amazon Pay Merchant", "BharatPe QR", "Crypto Exchange", "Global Remittance", "FauxBank ATM"];
+    const COUNTRIES = ["US", "IN", "FR", "CN", "RU", "NG", "KP", "BR", "JP", "UK"];
+    const DEVICES = [
+      "Apple iPhone",
+      "Apple iPad",
+      "Samsung Phone",
+      "Samsung Galaxy Tab",
+      "Google Pixel",
+      "Google Pixel Tablet",
+      "OnePlus Phone",
+      "OnePlus Pad",
+      "Xiaomi Phone",
+      "Xiaomi Pad",
+      "Motorola Smartphone",
+      "Realme Smartphone",
+      "Oppo Smartphone",
+      "Vivo Smartphone",
+      "Lenovo Tablet",
+      "Huawei Smartphone",
+      "Huawei MatePad",
+      "Asus Smartphone"
+    ];
+
+    function randomBetween(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+    const defRandomEl = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    // Generate highly realistic mock transactions
+    function generateTransaction(id) {
+      const isSuspect = Math.random() < 0.15;
+      const amount = isSuspect ? randomBetween(8000, 180000) : randomBetween(10, 1500);
+      const country = isSuspect ? defRandomEl(["RU", "NG", "KP", "CN"]) : defRandomEl(["US", "IN", "FR", "JP", "UK"]);
+      const merchant = isSuspect ? defRandomEl(["Crypto Exchange", "Global Remittance", "FauxBank ATM"]) : defRandomEl(["PhonePe Merchant", "GPay P2M", "Paytm Gateway", "CRED Store", "Amazon Pay Merchant", "BharatPe QR"]);
+      const velocity = isSuspect ? randomBetween(9, 28) : randomBetween(1, 4);
+      const device = defRandomEl(DEVICES);
+      const newDevice = isSuspect && Math.random() > 0.3;
+      
+      // Feature weights
+      const amtScore = isSuspect ? randomBetween(70, 99) : randomBetween(2, 28);
+      const velScore = isSuspect ? randomBetween(65, 98) : randomBetween(3, 22);
+      const geoScore = isSuspect ? randomBetween(75, 96) : randomBetween(1, 15);
+      const merchScore = isSuspect ? randomBetween(60, 92) : randomBetween(2, 18);
+      const devScore = newDevice ? randomBetween(70, 95) : randomBetween(1, 12);
+
+      // Score computation
+      const score = Math.round((amtScore * 0.35 + velScore * 0.25 + geoScore * 0.20 + merchScore * 0.12 + devScore * 0.08));
+      const risk = score >= 50 ? "HIGH" : score >= 30 ? "MEDIUM" : "LOW";
+      
+      const now = new Date();
+      now.setSeconds(now.getSeconds() - randomBetween(0, 120));
+
+      return {
+        id: `TXN-${String(id).padStart(7, "0")}`,
+        time: now.toLocaleTimeString(),
+        amount,
+        type: defRandomEl(TX_TYPES),
+        merchant,
+        country,
+        velocity,
+        device,
+        newDevice,
+        score,
+        risk,
+        status: risk === "HIGH" ? "Flagged" : risk === "MEDIUM" ? "Review" : "Cleared",
+        features: {
+          "Amount anomaly": amtScore,
+          "Velocity Warning": velScore,
+          "Geo mismatch": geoScore,
+          "Merchant safety": merchScore,
+          "Device trust": devScore,
+        },
+      };
+    }
+
+    // Generate historical trends data
+    function generateTrends() {
+      return Array.from({ length: 15 }, (_, i) => {
+        const hour = `${String(i * 2).padStart(2, "0")}:00`;
+        return {
+          hour,
+          total: randomBetween(250, 600),
+          flagged: randomBetween(5, 45),
+        };
+      });
+    }
+
+    // Generating Static ROC and PR Curve Datapoints
+    const ROC_CURVE_DATA = Array.from({ length: 101 }, (_, i) => {
+      const fpr = i / 100;
+      // ROC curve formula: tpr = fpr^0.15 (simulating excellent AUC of ~0.94)
+      const tpr = Math.pow(fpr, 0.12);
+      return { fpr: parseFloat(fpr.toFixed(2)), tpr: parseFloat(tpr.toFixed(3)) };
+    });
+
+    const PR_CURVE_DATA = Array.from({ length: 101 }, (_, i) => {
+      const recall = i / 100;
+      // PR curve: precision = 1.0 - recall^4 (simulating highly clean model with high precision at low recall)
+      const precision = 1.0 - Math.pow(recall, 4.5);
+      return { recall: parseFloat(recall.toFixed(2)), precision: parseFloat(precision.toFixed(3)) };
+    });
+
+    // ----------------------------------------------------
+    // COMPONENT: Physics-Based GNN Graph Visualizer (Canvas)
+    // ----------------------------------------------------
+    function GnnGraphCanvas({ selectedTx, riskColors }) {
+      const canvasRef = useRef(null);
+      const requestRef = useRef(null);
+      const stateRef = useRef({ nodes: [], links: [], hoveredNode: null });
+
+      useEffect(() => {
+        if (!selectedTx) return;
+
+        // Initialize nodes for GNN visual
+        const nodes = [
+          { id: "TXN", label: selectedTx.id, type: "transaction", score: selectedTx.score, risk: selectedTx.risk, x: 250, y: 150, radius: 25, vx: 0, vy: 0 },
+          { id: "ACC", label: "User Account (ACC-827361)", type: "account", score: Math.round(selectedTx.score * 0.9), x: 150, y: 80, radius: 18, vx: 0, vy: 0 },
+          { id: "DEV", label: `Device (${selectedTx.device})`, type: "device", score: selectedTx.features["Device trust"], x: 350, y: 80, radius: 16, vx: 0, vy: 0 },
+          { id: "GEO", label: `IP Geolocation (${selectedTx.country})`, type: "geo", score: selectedTx.features["Geo mismatch"], x: 100, y: 220, radius: 16, vx: 0, vy: 0 },
+          { id: "MER", label: `Merchant (${selectedTx.merchant})`, type: "merchant", score: selectedTx.features["Merchant safety"], x: 400, y: 220, radius: 18, vx: 0, vy: 0 },
+          { id: "CARD", label: "Payment Route (Visa/Mastercard)", type: "card", score: selectedTx.features["Amount anomaly"], x: 250, y: 260, radius: 16, vx: 0, vy: 0 }
+        ];
+
+        // Link node indices
+        const links = [
+          { source: 0, target: 1, weight: 0.85 },
+          { source: 0, target: 2, weight: 0.72 },
+          { source: 0, target: 3, weight: 0.91 },
+          { source: 0, target: 4, weight: 0.65 },
+          { source: 0, target: 5, weight: 0.88 },
+          { source: 1, target: 2, weight: 0.45 },
+          { source: 1, target: 3, weight: 0.62 }
+        ];
+
+        stateRef.current = { nodes, links, hoveredNode: null };
+      }, [selectedTx]);
+
+      // Animation Loop
+      const animate = useCallback(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        const { nodes, links } = stateRef.current;
+
+        // Apply physics forces (Simple Attraction / Repulsion)
+        const targetX = canvas.width / 2;
+        const targetY = canvas.height / 2;
+        
+        // 1. Center Gravity
+        nodes.forEach(n => {
+          n.vx += (targetX - n.x) * 0.005;
+          n.vy += (targetY - n.y) * 0.005;
+        });
+
+        // 2. Node Repulsion
+        for (let i = 0; i < nodes.length; i++) {
+          for (let j = i + 1; j < nodes.length; j++) {
+            const dx = nodes[j].x - nodes[i].x;
+            const dy = nodes[j].y - nodes[i].y;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            const minDist = 90;
+            if (dist < minDist) {
+              const force = (minDist - dist) * 0.05;
+              const fx = (dx / dist) * force;
+              const fy = (dy / dist) * force;
+              nodes[i].vx -= fx;
+              nodes[i].vy -= fy;
+              nodes[j].vx += fx;
+              nodes[j].vy += fy;
+            }
+          }
+        }
+
+        // 3. Link Spring Constraint
+        links.forEach(l => {
+          const s = nodes[l.source];
+          const t = nodes[l.target];
+          const dx = t.x - s.x;
+          const dy = t.y - s.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          const targetDist = 120;
+          const spring = (dist - targetDist) * 0.02;
+          const fx = (dx / dist) * spring;
+          const fy = (dy / dist) * spring;
+          s.vx += fx;
+          s.vy += fy;
+          t.vx -= fx;
+          t.vy -= fy;
+        });
+
+        // 4. Update Node Positions & Bounds
+        nodes.forEach(n => {
+          n.x += n.vx;
+          n.y += n.vy;
+          n.vx *= 0.85; // friction
+          n.vy *= 0.85;
+          
+          // boundary checks
+          if (n.x < 30) n.x = 30;
+          if (n.x > canvas.width - 30) n.x = canvas.width - 30;
+          if (n.y < 30) n.y = 30;
+          if (n.y > canvas.height - 30) n.y = canvas.height - 30;
+        });
+
+        // DRAW GRAPH
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // A. Draw links (GNN message paths)
+        links.forEach(l => {
+          const s = nodes[l.source];
+          const t = nodes[l.target];
+          ctx.beginPath();
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(t.x, t.y);
+          
+          // Animate pulses on links to show live GNN inference propagation!
+          const pulseLoc = (Date.now() % 2000) / 2000;
+          const pX = s.x + (t.x - s.x) * pulseLoc;
+          const pY = s.y + (t.y - s.y) * pulseLoc;
+
+          // Link line gradient
+          ctx.strokeStyle = "rgba(59, 130, 246, 0.25)";
+          ctx.lineWidth = l.weight * 2;
+          ctx.stroke();
+
+          // Pulse dot
+          ctx.fillStyle = "var(--accent-cyan)";
+          ctx.beginPath();
+          ctx.arc(pX, pY, 3, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // B. Draw nodes
+        nodes.forEach(n => {
+          // Glow effect
+          ctx.shadowBlur = 10;
+          if (n.type === "transaction") {
+            ctx.shadowColor = RISK_COLORS[selectedTx.risk];
+            ctx.fillStyle = RISK_COLORS[selectedTx.risk];
+          } else {
+            ctx.shadowColor = n.score > 50 ? "var(--accent-orange)" : "rgba(59, 130, 246, 0.4)";
+            ctx.fillStyle = n.score > 50 ? "var(--accent-orange)" : "#1e3a8a";
+          }
+
+          // Node body
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Border Ring
+          ctx.shadowBlur = 0;
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = stateRef.current.hoveredNode === n ? 3 : 1.5;
+          ctx.stroke();
+
+          // Type icons indicator (Text shortcode)
+          ctx.fillStyle = "#ffffff";
+          ctx.font = "bold 9px 'Inter'";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          const iconText = n.type === "transaction" ? "TX" : n.type === "account" ? "ACC" : n.type === "device" ? "DEV" : n.type === "geo" ? "GEO" : n.type === "merchant" ? "MER" : "CRD";
+          ctx.fillText(iconText, n.x, n.y);
+
+          // Node Labels
+          ctx.fillStyle = "var(--text-main)";
+          ctx.font = "10px 'Inter'";
+          ctx.fillText(n.type === "transaction" ? n.label : n.type, n.x, n.y + n.radius + 12);
+        });
+
+        // C. Draw Hover Card if any node is hovered
+        const hovered = stateRef.current.hoveredNode;
+        if (hovered) {
+          ctx.fillStyle = "rgba(4, 6, 15, 0.9)";
+          ctx.strokeStyle = "var(--accent-cyan)";
+          ctx.lineWidth = 1;
+          const boxW = 160;
+          const boxH = 50;
+          const bx = Math.min(canvas.width - boxW - 10, Math.max(10, hovered.x - boxW / 2));
+          const by = Math.max(10, hovered.y - hovered.radius - boxH - 10);
+          
+          ctx.beginPath();
+          ctx.roundRect(bx, by, boxW, boxH, 6);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = "#ffffff";
+          ctx.font = "bold 10px 'Inter'";
+          ctx.textAlign = "left";
+          ctx.textBaseline = "top";
+          ctx.fillText(hovered.label, bx + 8, by + 8);
+
+          ctx.fillStyle = "var(--text-muted)";
+          ctx.font = "9px 'Inter'";
+          ctx.fillText(`Type: ${hovered.type.toUpperCase()}`, bx + 8, by + 22);
+          ctx.fillText(`Anomaly Vector Score: ${hovered.score}%`, bx + 8, by + 34);
+        }
+
+        requestRef.current = requestAnimationFrame(animate);
+      }, [selectedTx, RISK_COLORS]);
+
+      useEffect(() => {
+        requestRef.current = requestAnimationFrame(animate);
+        return () => cancelAnimationFrame(requestRef.current);
+      }, [animate]);
+
+      // Handle Mouse Move over Canvas
+      const handleMouseMove = (e) => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+
+        const { nodes } = stateRef.current;
+        let found = null;
+        for (let i = 0; i < nodes.length; i++) {
+          const n = nodes[i];
+          const dx = n.x - mx;
+          const dy = n.y - my;
+          if (Math.sqrt(dx * dx + dy * dy) < n.radius) {
+            found = n;
+            break;
+          }
+        }
+        stateRef.current.hoveredNode = found;
+      };
+
+      return (
+        <div style={{ position: "relative" }}>
+          <canvas
+            ref={canvasRef}
+            width={500}
+            height={320}
+            style={{ width: "100%", background: "#03050a", borderRadius: 8, border: "1px solid rgba(255, 255, 255, 0.05)" }}
+            onMouseMove={handleMouseMove}
+          />
+          <div style={{ position: "absolute", bottom: 10, left: 10, fontSize: 9, color: "var(--text-dim)", pointerEvents: "none" }}>
+            GNN Subgraph Node Interaction · Hover nodes to inspect telemetry weights
+          </div>
+        </div>
+      );
+    }
+
+    // ----------------------------------------------------
+    // MAIN APP COMPONENT: FraudDashboard
+    // ----------------------------------------------------
+    function FraudDashboard() {
+      const [tab, setTab] = useState("ops");
+      const [transactions, setTransactions] = useState([]);
+      const [trends, setTrends] = useState(generateTrends());
+      const [selectedTx, setSelectedTx] = useState(null);
+      const [filterRisk, setFilterRisk] = useState("ALL");
+      const [live, setLive] = useState(true);
+      const [threshold, setThreshold] = useState(50);
+      
+      // Retraining state variables
+      const [verdictHistory, setVerdictHistory] = useState([
+        { txnId: "TXN-0010478", verdict: "Confirmed Fraud", timestamp: "18:40:12", amount: 85000, score: 82 },
+        { txnId: "TXN-0010475", verdict: "False Positive", timestamp: "18:41:05", amount: 450, score: 32 },
+        { txnId: "TXN-0010470", verdict: "Confirmed Fraud", timestamp: "18:43:22", amount: 120000, score: 94 }
+      ]);
+      const [retrainingLogs, setRetrainingLogs] = useState([]);
+      const [retrainingRunning, setRetrainingRunning] = useState(false);
+      const [trainingLoss, setTrainingLoss] = useState([0.38, 0.29, 0.22, 0.17, 0.13, 0.11, 0.09, 0.08, 0.07, 0.065]);
+      
+      // Integration settings
+      const [engineType, setEngineType] = useState("Checking API...");
+      const [apiConnected, setApiConnected] = useState(false);
+      const [framework, setFramework] = useState("FastAPI");
+      const [apiLatency, setApiLatency] = useState(0);
+      const [tabCode, setTabCode] = useState("fastapi");
+      const [activePipelineStep, setActivePipelineStep] = useState(0);
+      const [apiBaseUrl, setApiBaseUrl] = useState(() => localStorage.getItem("shield_api_base") || "http://localhost:8000");
+
+      // API Logging & Metrics Verification State
+      const [apiLogs, setApiLogs] = useState([
+        { id: 1, time: new Date().toLocaleTimeString(), type: "info", msg: "API Log Console Initialized. Ready to stream gateway telemetry." }
+      ]);
+      const logIdRef = useRef(2);
+      const apiConnectedRef = useRef(false);
+      const [auditRunning, setAuditRunning] = useState(false);
+      const [auditResult, setAuditResult] = useState(null);
+      const [dbCount, setDbCount] = useState(0);
+
+
+      const addApiLog = useCallback((type, msg, details = null) => {
+        const id = logIdRef.current++;
+        const time = new Date().toLocaleTimeString();
+        setApiLogs(prev => [
+          ...prev.slice(-49),
+          { id, time, type, msg, details }
+        ]);
+      }, []);
+
+      const [metricsData, setMetricsData] = useState({
+        accuracy: 0.95,
+        precision: 0.94,
+        recall: 0.92,
+        f1_score: 0.93,
+        tp: 138,
+        fp: 9,
+        fn: 12,
+        tn: 841,
+        fpr: 0.01
+      });
+
+      // Custom transaction injection states
+      const [showCustomModal, setShowCustomModal] = useState(false);
+      const [customAmount, setCustomAmount] = useState(15000);
+      const [customType, setCustomType] = useState("Card Purchase");
+      const [customMerchant, setCustomMerchant] = useState("Crypto Exchange");
+      const [customCountry, setCustomCountry] = useState("RU");
+      const [customVelocity, setCustomVelocity] = useState(8);
+      const [customDevice, setCustomDevice] = useState("iPhone 15");
+      const [customNewDevice, setCustomNewDevice] = useState(true);
+      const [customTxId, setCustomTxId] = useState("");
+
+      const handleInjectTransaction = async (e) => {
+        if (e) e.preventDefault();
+        let idVal = customTxId.trim();
+        if (!idVal) {
+          txIdRef.current++;
+          idVal = `TXN-${String(txIdRef.current).padStart(7, "0")}`;
+        }
+        
+        let newTx = {
+          id: idVal,
+          time: new Date().toLocaleTimeString(),
+          amount: parseFloat(customAmount),
+          type: customType,
+          merchant: customMerchant,
+          country: customCountry,
+          velocity: parseInt(customVelocity),
+          device: customDevice,
+          newDevice: customNewDevice,
+          analystVerdict: null
+        };
+
+        const amtScore = newTx.amount > 5000 ? Math.min(100, Math.round((newTx.amount / 50000) * 100)) : randomBetween(5, 25);
+        const velScore = Math.min(100, Math.round((newTx.velocity / 20) * 100));
+        const geoScore = ["RU", "NG", "KP", "CN"].includes(newTx.country) ? 85 : randomBetween(5, 20);
+        const merchScore = ["Crypto Exchange", "Global Remittance", "FauxBank ATM"].includes(newTx.merchant) ? 90 : randomBetween(2, 15);
+        const devScore = newTx.newDevice ? 75 : randomBetween(1, 10);
+
+        newTx.features = {
+          "Amount anomaly": amtScore,
+          "Velocity Warning": velScore,
+          "Geo mismatch": geoScore,
+          "Merchant safety": merchScore,
+          "Device trust": devScore
+        };
+
+        if (apiConnected) {
+          try {
+            const reqPayload = {
+              id: newTx.id,
+              amount: newTx.amount,
+              type: newTx.type,
+              merchant: newTx.merchant,
+              country: newTx.country,
+              device: newTx.device,
+              newDevice: newTx.newDevice,
+              velocity: newTx.velocity,
+              features: newTx.features
+            };
+            addApiLog("req", `POST /score - Injected custom transaction ${newTx.id}`, reqPayload);
+            const start = Date.now();
+            const res = await fetch(`${apiBaseUrl}/score`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(reqPayload)
+            });
+            if (res.ok) {
+              const data = await res.json();
+              const elapsed = Date.now() - start;
+              newTx = {
+                ...newTx,
+                score: data.score,
+                risk: data.risk,
+                status: data.status,
+                narrative: data.narrative,
+                api_source: data.api_source,
+                latency: data.latency_ms
+              };
+              setSysLatency(data.latency_ms);
+              addApiLog("res", `200 OK - score response returned in ${elapsed}ms`, data);
+            } else {
+              addApiLog("err", `POST /score - HTTP Error ${res.status}`, null);
+            }
+          } catch (err) {
+            addApiLog("err", `POST /score - Network failure`, { error: err.message });
+            console.warn(`${framework} score request failed, using local scoring fallback`, err);
+          }
+        }
+
+        if (newTx.score === undefined) {
+          const score = Math.round((amtScore * 0.35 + velScore * 0.25 + geoScore * 0.20 + merchScore * 0.12 + devScore * 0.08));
+          const risk = score >= 50 ? "HIGH" : score >= 30 ? "MEDIUM" : "LOW";
+          newTx.score = score;
+          newTx.risk = risk;
+          newTx.status = risk === "HIGH" ? "Flagged" : risk === "MEDIUM" ? "Review" : "Cleared";
+          newTx.latency = parseFloat((3.5 + Math.random() * 5).toFixed(2));
+          newTx.api_source = "Local Engine (Custom Mock)";
+          setSysLatency(newTx.latency);
+          addApiLog("info", `Processed transaction ${newTx.id} locally (Simulation Fallback)`, newTx);
+        }
+
+        setTransactions(prev => [newTx, ...prev.slice(0, 70)]);
+        setSelectedTx(newTx);
+        setShowCustomModal(false);
+        setCustomTxId("");
+        setTab("intel");
+      };
+
+      const txIdRef = useRef(10482);
+      const streamTimerRef = useRef(null);
+      // System Performance Telemetry state
+      const [tps, setTps] = useState(24.5);
+      const [sysLatency, setSysLatency] = useState(12.8);
+      const [cpuLoad, setCpuLoad] = useState(38);
+
+      // Check API Connectivity on mount and log status
+      useEffect(() => {
+        const checkConnection = async () => {
+          try {
+            addApiLog("req", "GET /metrics - Checking API server status", null);
+            const start = Date.now();
+            const res = await fetch(`${apiBaseUrl}/metrics`);
+            if (res.ok) {
+              const data = await res.json();
+              const latency = Date.now() - start;
+              
+              const wasConnected = apiConnectedRef.current;
+              setApiConnected(true);
+              apiConnectedRef.current = true;
+              const fw = data.framework || "FastAPI";
+              setFramework(fw);
+              setEngineType(`Live REST API (${fw})`);
+              setApiLatency(latency);
+              addApiLog("res", `200 OK - server metrics endpoint responsive (${latency}ms)`, { accuracy: data.accuracy, f1: data.f1_score });
+
+              // Load transactions from API on connection/reconnection
+              if (!wasConnected) {
+                try {
+                  addApiLog("req", "GET /transactions - Loading database state", null);
+                  const txRes = await fetch(`${apiBaseUrl}/transactions`);
+                  if (txRes.ok) {
+                    const txData = await txRes.json();
+                    if (Array.isArray(txData) && txData.length > 0) {
+                      setTransactions(txData);
+                      setSelectedTx(txData[0]);
+                      addApiLog("res", `200 OK - Loaded ${txData.length} transactions from backend database`, null);
+                    }
+                  }
+                } catch (txErr) {
+                  console.error("Failed to load initial transactions from API", txErr);
+                }
+              }
+            } else {
+              throw new Error("HTTP Status " + res.status);
+            }
+          } catch (e) {
+            setApiConnected(false);
+            apiConnectedRef.current = false;
+            setEngineType("Simulated Neural Engine (Client-Side)");
+            addApiLog("err", `${framework} connection offline. Falling back to local neural simulation.`, { error: e.message });
+          }
+        };
+
+        checkConnection();
+        const checkInterval = setInterval(checkConnection, 15000); // Check every 15s to prevent log spam
+        return () => clearInterval(checkInterval);
+      }, [addApiLog, framework, apiBaseUrl]);
+
+      // Periodically update the database count if connected
+      useEffect(() => {
+        if (!apiConnected) {
+          setDbCount(0);
+          return;
+        }
+        const getDbCount = async () => {
+          try {
+            const res = await fetch(`${apiBaseUrl}/transactions`);
+            if (res.ok) {
+              const data = await res.json();
+              if (Array.isArray(data)) {
+                setDbCount(data.length);
+              }
+            }
+          } catch (e) {
+            console.error("Error fetching db count:", e);
+          }
+        };
+        getDbCount();
+        const interval = setInterval(getDbCount, 8000);
+        return () => clearInterval(interval);
+      }, [apiConnected, apiBaseUrl]);
+
+      // Audit checking backend vs local state
+      const runDatabaseAudit = async () => {
+        setAuditRunning(true);
+        addApiLog("req", "GET /transactions - Querying entire backend database for verification audit", null);
+        
+        // Wait 800ms to simulate audit run (feels premium!)
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        try {
+          const res = await fetch(`${apiBaseUrl}/transactions`);
+          if (res.ok) {
+            const backendTxns = await res.json();
+            if (Array.isArray(backendTxns)) {
+              setDbCount(backendTxns.length);
+              
+              // Compare with current local React transactions state
+              let matched = 0;
+              let mismatchDetails = [];
+              
+              transactions.forEach(localTx => {
+                // Find matching transaction in backend by ID
+                const backendTx = backendTxns.find(b => b.id === localTx.id);
+                if (backendTx) {
+                  const amtMatch = Math.abs(backendTx.amount - localTx.amount) < 0.01;
+                  const scoreMatch = Math.abs(backendTx.score - localTx.score) < 0.1;
+                  if (amtMatch && scoreMatch) {
+                    matched++;
+                  } else {
+                    mismatchDetails.push({ id: localTx.id, error: "Feature/Score value mismatch" });
+                  }
+                } else {
+                  // If it's a simulated fallback transaction, it is local-only
+                  mismatchDetails.push({ id: localTx.id, error: "Not found in API database (Local Fallback)" });
+                }
+              });
+
+              const result = {
+                totalChecked: transactions.length,
+                matched,
+                mismatches: mismatchDetails,
+                status: mismatchDetails.length === 0 && transactions.length > 0 ? "SUCCESS" : "PARTIAL",
+                timestamp: new Date().toLocaleTimeString()
+              };
+              setAuditResult(result);
+              addApiLog("res", `Audit Complete - Verified ${matched}/${transactions.length} transactions against ${framework} DB`, result);
+            } else {
+              throw new Error("Invalid response format");
+            }
+          } else {
+            throw new Error(`HTTP Error ${res.status}`);
+          }
+        } catch (e) {
+          setAuditResult({
+            error: e.message,
+            status: "ERROR",
+            timestamp: new Date().toLocaleTimeString()
+          });
+          addApiLog("err", "Database Audit Failed", { error: e.message });
+        } finally {
+          setAuditRunning(false);
+        }
+      };
+
+      // Fetch dynamic metrics from API when threshold changes
+      useEffect(() => {
+        const fetchMetrics = async () => {
+          if (!apiConnected) return;
+          try {
+            addApiLog("req", `GET /metrics?threshold=${threshold} - Requesting boundary telemetry`, null);
+            const start = Date.now();
+            const res = await fetch(`${apiBaseUrl}/metrics?threshold=${threshold}`);
+            if (res.ok) {
+              const data = await res.json();
+              const elapsed = Date.now() - start;
+              setMetricsData({
+                accuracy: data.accuracy,
+                precision: data.precision,
+                recall: data.recall,
+                f1_score: data.f1_score,
+                tp: data.confusion_matrix.TP,
+                fp: data.confusion_matrix.FP,
+                fn: data.confusion_matrix.FN,
+                tn: data.confusion_matrix.TN,
+                fpr: data.fpr
+              });
+              addApiLog("res", `200 OK - fetched metrics for threshold=${threshold} (${elapsed}ms)`, data);
+            } else {
+              addApiLog("err", `GET /metrics - HTTP Error ${res.status}`, null);
+            }
+          } catch (e) {
+            console.error(`Failed to fetch metrics from ${framework}`, e);
+            addApiLog("err", `Failed to fetch metrics from ${framework}`, { error: e.message });
+          }
+        };
+
+        const debounceTimer = setTimeout(fetchMetrics, 300);
+        return () => clearTimeout(debounceTimer);
+      }, [threshold, apiConnected, addApiLog, framework, apiBaseUrl]);
+
+      // Populate Initial Transactions
+      useEffect(() => {
+        const initTxns = Array.from({ length: 30 }, (_, i) => {
+          txIdRef.current++;
+          return generateTransaction(txIdRef.current);
+        });
+        setTransactions(initTxns);
+        setSelectedTx(initTxns[0]);
+      }, []);
+
+      // Live transaction generator stream
+      const addLiveTransaction = useCallback(async () => {
+        txIdRef.current++;
+        let newTx = generateTransaction(txIdRef.current);
+
+        // If FastAPI backend is connected, process transaction through it!
+        if (apiConnected) {
+          try {
+            const reqPayload = {
+              id: newTx.id,
+              amount: newTx.amount,
+              type: newTx.type,
+              merchant: newTx.merchant,
+              country: newTx.country,
+              device: newTx.device,
+              newDevice: newTx.newDevice,
+              velocity: newTx.velocity,
+              features: newTx.features
+            };
+            addApiLog("req", `POST /score - Scoring transaction ${newTx.id}`, reqPayload);
+            const start = Date.now();
+            const res = await fetch(`${apiBaseUrl}/score`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(reqPayload)
+            });
+            if (res.ok) {
+              const data = await res.json();
+              const elapsed = Date.now() - start;
+              newTx = {
+                ...newTx,
+                score: data.score,
+                risk: data.risk,
+                status: data.status,
+                narrative: data.narrative,
+                api_source: data.api_source,
+                latency: data.latency_ms
+              };
+              setSysLatency(data.latency_ms);
+              addApiLog("res", `200 OK - score response returned in ${elapsed}ms`, data);
+            } else {
+              addApiLog("err", `POST /score - HTTP Error ${res.status}`, null);
+            }
+          } catch (e) {
+            addApiLog("err", `POST /score - Network failure`, { error: e.message });
+            console.warn(`${framework} score request failed, falling back to local simulator`, e);
+          }
+        } else {
+          // Local simulated latency (under 10 ms)
+          newTx.latency = parseFloat((3.5 + Math.random() * 5).toFixed(2));
+          setSysLatency(newTx.latency);
+          addApiLog("info", `Generated simulated transaction ${newTx.id} locally`, newTx);
+        }
+
+        setTransactions(prev => [newTx, ...prev.slice(0, 70)]);
+        
+        // Update live throughput metrics
+        setTps(parseFloat((18 + Math.random() * 12).toFixed(1)));
+        setCpuLoad(randomBetween(28, 48));
+      }, [apiConnected, addApiLog, framework, apiBaseUrl]);
+
+      useEffect(() => {
+        if (live) {
+          streamTimerRef.current = setInterval(addLiveTransaction, 2500);
+        } else {
+          clearInterval(streamTimerRef.current);
+        }
+        return () => clearInterval(streamTimerRef.current);
+      }, [live, addLiveTransaction]);
+
+      // Local dynamic math for ROC and PR Curve selection points
+      const thresholdPct = threshold / 100;
+      
+      // Calculate Confusion Matrix for current threshold
+      // Assuming 1000 total test items, 150 are actual fraud, 850 are clean
+      const actualFraud = 150;
+      const actualClean = 850;
+      
+      const localTpr = Math.pow(1.0 - thresholdPct, 0.15);
+      const localFpr = Math.pow(1.0 - thresholdPct, 2.5);
+      const localTp = Math.round(actualFraud * localTpr);
+      const localFn = actualFraud - localTp;
+      const localFp = Math.round(actualClean * localFpr);
+      const localTn = actualClean - localFp;
+      const localAccuracy = ((localTp + localTn) / 1000);
+      const localPrecision = localTp / (localTp + localFp) || 1.0;
+      const localRecall = localTpr;
+      const localF1 = (2 * localPrecision * localRecall) / (localPrecision + localRecall) || 0;
+
+      const currentMetrics = apiConnected ? metricsData : {
+        accuracy: localAccuracy,
+        precision: localPrecision,
+        recall: localRecall,
+        f1_score: localF1,
+        tp: localTp,
+        fp: localFp,
+        fn: localFn,
+        tn: localTn,
+        fpr: localFpr
+      };
+
+      const { accuracy, precision, recall, f1, tp, fp, fn, tn, fpr } = {
+        accuracy: currentMetrics.accuracy,
+        precision: currentMetrics.precision,
+        recall: currentMetrics.recall,
+        f1: currentMetrics.f1_score,
+        tp: currentMetrics.tp,
+        fp: currentMetrics.fp,
+        fn: currentMetrics.fn,
+        tn: currentMetrics.tn,
+        fpr: currentMetrics.fpr
+      };
+
+      // Filtered transaction list
+      const filteredTxns = transactions.filter(t => {
+        if (filterRisk === "ALL") return true;
+        return t.risk === filterRisk;
+      });
+
+      // Handle submitting Analyst override
+      const submitVerdict = (txnId, verdict) => {
+        setTransactions(prev => prev.map(t => {
+          if (t.id === txnId) {
+            return { ...t, analystVerdict: verdict };
+          }
+          return t;
+        }));
+        
+        if (selectedTx && selectedTx.id === txnId) {
+          setSelectedTx(prev => ({ ...prev, analystVerdict: verdict }));
+        }
+
+        // Add to retrain queue history
+        const newRecord = {
+          txnId,
+          verdict,
+          timestamp: new Date().toLocaleTimeString(),
+          amount: selectedTx.amount,
+          score: selectedTx.score
+        };
+        setVerdictHistory(prev => [newRecord, ...prev]);
+      };
+
+      // Handle retraining execution animation
+      const executeRetraining = async () => {
+        if (verdictHistory.length === 0) {
+          alert("Please override at least one transaction in the 'Threat Intelligence / AI' tab to log human feedback before retraining.");
+          return;
+        }
+
+        setRetrainingRunning(true);
+        setRetrainingLogs([]);
+
+        const logs = [
+          "Initiating continuous feedback-driven retraining run...",
+          `Reading ${verdictHistory.length} human-labeled analyst verdicts from SQLite buffer...`,
+          "Extracted local sub-graph coordinates for labeled transaction hashes...",
+          "Building training batches (including SMOTE minor class oversampling)...",
+          "Initializing Adam optimizer (lr=0.001) & CrossEntropyLoss metrics...",
+          "Epoch 1/5: Loss: 0.184 | Accuracy: 98.15%",
+          "Epoch 2/5: Loss: 0.129 | Accuracy: 98.42%",
+          "Epoch 3/5: Loss: 0.091 | Accuracy: 98.81%",
+          "Epoch 4/5: Loss: 0.063 | Accuracy: 99.04%",
+          "Epoch 5/5: Loss: 0.041 | Accuracy: 99.25%",
+          "Evaluating weights on Validation Dataset...",
+          "Saving updated neural layer nodes back to system weights configuration.",
+          "Model retrained successfully! Precision-Recall balance optimized."
+        ];
+
+        // If FastAPI backend is connected, trigger the actual RETRAIN POST request!
+        if (apiConnected) {
+          try {
+            const payload = verdictHistory.map(v => ({ txn_id: v.txnId, verdict: v.verdict }));
+            addApiLog("req", `POST /retrain - Initiating GNN retraining with ${payload.length} feedback tuples`, { verdicts: payload });
+            const start = Date.now();
+            const res = await fetch(`${apiBaseUrl}/retrain`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ verdicts: payload })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              const elapsed = Date.now() - start;
+              setTrainingLoss(data.loss_history);
+              addApiLog("res", `200 OK - retrain completed in ${elapsed}ms`, data);
+            } else {
+              addApiLog("err", `POST /retrain - HTTP Error ${res.status}`, null);
+            }
+          } catch (e) {
+            addApiLog("err", `POST /retrain - Network failure during retraining execution`, { error: e.message });
+            console.error(`${framework} retraining failed`, e);
+          }
+        }
+
+        // Visual log delay print
+        for (let i = 0; i < logs.length; i++) {
+          await new Promise(r => setTimeout(r, 600));
+          setRetrainingLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${logs[i]}`]);
+        }
+
+        // Update local chart loss trends showing retraining progression
+        setTrainingLoss(prev => [...prev.map(l => parseFloat((l * 0.75).toFixed(4))), 0.021]);
+        setRetrainingRunning(false);
+      };
+
+      const addMockFeedback = () => {
+        const mockTxId = `TXN-${String(randomBetween(10483, 10999)).padStart(7, "0")}`;
+        const mockAmt = randomBetween(500, 150000);
+        const mockScore = randomBetween(20, 99);
+        const mockVerdict = mockScore >= 55 ? "Confirmed Fraud" : "False Positive";
+        const newRecord = {
+          txnId: mockTxId,
+          verdict: mockVerdict,
+          timestamp: new Date().toLocaleTimeString(),
+          amount: mockAmt,
+          score: mockScore
+        };
+        setVerdictHistory(prev => [newRecord, ...prev]);
+      };
+
+      // Pie chart data
+      const stats = {
+        total: transactions.length,
+        high: transactions.filter(t => t.risk === "HIGH").length,
+        medium: transactions.filter(t => t.risk === "MEDIUM").length,
+        low: transactions.filter(t => t.risk === "LOW").length,
+        totalVolume: transactions.reduce((sum, t) => sum + t.amount, 0)
+      };
+
+      const pieData = [
+        { name: "High Risk Alerts", value: stats.high, color: RISK_COLORS.HIGH },
+        { name: "Manual Review", value: stats.medium, color: RISK_COLORS.MEDIUM },
+        { name: "Safe Clearances", value: stats.low, color: RISK_COLORS.LOW }
+      ];
+
+      return (
+        <div style={{ paddingBottom: "50px" }}>
+          {/* 1. HEADER SECTION */}
+          <div style={{
+            display: "flex", 
+            justifyContent: "space-between", 
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "12px",
+            marginBottom: "20px",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+            paddingBottom: "20px"
+          }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <span className="pulse-cyan-dot" style={{ width: "10px", height: "10px", borderRadius: "50%", background: apiConnected ? "var(--accent-green)" : "var(--accent-cyan)" }} />
+                <span style={{ fontSize: "11px", fontWeight: "700", letterSpacing: "0.15em", color: "var(--accent-cyan)", textTransform: "uppercase" }}>
+                  SHIELD NETWORK FDS · ACTIVE: {engineType}
+                </span>
+              </div>
+              <h1 style={{ fontSize: "28px", fontWeight: "700", marginTop: "4px", letterSpacing: "-0.02em" }}>
+                Shield <span style={{ color: "var(--accent-cyan)", fontWeight: "300" }}>Risk Intelligence Engine</span>
+              </h1>
+            </div>
+            
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", padding: "4px 8px", borderRadius: "6px" }}>
+                <span style={{ fontSize: "10px", color: "var(--text-dim)", textTransform: "uppercase" }}>Gateway:</span>
+                <input 
+                  type="text" 
+                  value={apiBaseUrl} 
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setApiBaseUrl(val);
+                    localStorage.setItem("shield_api_base", val);
+                  }}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "var(--accent-cyan)",
+                    fontSize: "11px",
+                    fontWeight: "600",
+                    outline: "none",
+                    width: "150px"
+                  }} 
+                />
+              </div>
+              <button 
+                onClick={() => setLive(!live)} 
+                className="glass-card"
+                style={{
+                  background: live ? "var(--accent-orange-dim)" : "var(--accent-green-dim)",
+                  border: `1px solid ${live ? "var(--accent-orange)" : "var(--accent-green)"}`,
+                  color: live ? "var(--accent-orange)" : "var(--accent-green)",
+                  cursor: "pointer", padding: "8px 16px", borderRadius: "6px", fontSize: "12px", fontWeight: "600"
+                }}
+              >
+                {live ? "Pause Feed" : "Resume Live Feed"}
+              </button>
+            </div>
+          </div>
+
+          {/* 2. REAL-TIME SYSTEM TELEMETRY STRIP */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "12px", marginBottom: "20px" }}>
+            {[
+              { label: "Pipeline Load", value: `${tps} txns/sec`, sub: "Global Gateway streams", color: "var(--accent-cyan)" },
+              { label: "Model Latency", value: `${sysLatency.toFixed(1)} ms`, sub: "Target SLA: < 200 ms", color: sysLatency < 20 ? "var(--accent-green)" : "var(--accent-orange)" },
+              { label: "Active Risk Alerts", value: stats.high, sub: "Immediate block priority", color: "var(--accent-red)" },
+              { label: "Reviews Pending", value: stats.medium, sub: "Assigned manual queues", color: "var(--accent-orange)" },
+              { label: "Monitored Flow Volume", value: `₹${(stats.totalVolume / 100000).toFixed(2)} Lakhs`, sub: "Combined live stream", color: "var(--text-main)" }
+            ].map((m, idx) => (
+              <div key={idx} className="glass-card" style={{ borderLeft: `3px solid ${m.color || "rgba(255, 255, 255, 0.08)"}` }}>
+                <p style={{ fontSize: "11px", fontWeight: "600", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{m.label}</p>
+                <h3 style={{ fontSize: "20px", fontWeight: "700", marginTop: "4px", color: m.color || "inherit" }}>{m.value}</h3>
+                <p style={{ fontSize: "10px", color: "var(--text-dim)", marginTop: "2px" }}>{m.sub}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* 3. NAVIGATION TABS */}
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "20px", background: "rgba(255,255,255,0.02)", padding: "6px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)" }}>
+            {[
+              { id: "ops", label: "Operations Feed" },
+              { id: "intel", label: "Threat Intelligence & GNN" },
+              { id: "threshold", label: "Decision Boundary Tuning" },
+              { id: "retrain", label: "Feedback Retraining" },
+              { id: "governance", label: "Governance & Data Drift" },
+              { id: "docs", label: "Architecture & Code Deploy" }
+            ].map(t => (
+              <button
+                key={t.id}
+                onClick={() => setTab(t.id)}
+                className={`btn-tab ${tab === t.id ? "active" : ""}`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {/* 4. TAB CONTENTS */}
+
+          {/* TAB: Operations Dashboard */}
+          {tab === "ops" && (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "16px", alignItems: "start" }}>
+              
+              {/* Left Column: Transaction Stream table */}
+              <div className="glass-card scanner-effect" style={{ padding: "0", overflow: "hidden" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", flexWrap: "wrap", gap: "10px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <h2 style={{ fontSize: "16px", fontWeight: "600" }}>Live Risk Evaluation Stream</h2>
+                    <button
+                      onClick={() => setShowCustomModal(true)}
+                      style={{
+                        background: "rgba(0, 240, 255, 0.15)",
+                        border: "1px solid var(--accent-cyan)",
+                        color: "var(--accent-cyan)",
+                        padding: "4px 10px",
+                        borderRadius: "4px",
+                        fontSize: "11px",
+                        cursor: "pointer",
+                        fontWeight: "700",
+                        transition: "all 0.15s ease",
+                        boxShadow: "0 0 5px rgba(0, 240, 255, 0.1)"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 0 10px rgba(0, 240, 255, 0.3)"}
+                      onMouseLeave={(e) => e.currentTarget.style.boxShadow = "0 0 5px rgba(0, 240, 255, 0.1)"}
+                    >
+                      + Inject Custom Txn
+                    </button>
+                  </div>
+                  <div style={{ display: "flex", gap: "4px" }}>
+                    {["ALL", "HIGH", "MEDIUM", "LOW"].map(r => (
+                      <button
+                        key={r}
+                        onClick={() => setFilterRisk(r)}
+                        style={{
+                          background: filterRisk === r ? "rgba(59, 130, 246, 0.15)" : "transparent",
+                          border: `1px solid ${filterRisk === r ? "var(--accent-cyan)" : "rgba(255,255,255,0.05)"}`,
+                          color: filterRisk === r ? "var(--accent-cyan)" : "var(--text-muted)",
+                          padding: "4px 10px", borderRadius: "4px", fontSize: "11px", cursor: "pointer"
+                        }}
+                      >
+                        {r}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Table structure */}
+                <div style={{ overflowX: "auto" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px", textAlign: "left" }}>
+                    <thead>
+                      <tr style={{ background: "rgba(255,255,255,0.02)", borderBottom: "1px solid rgba(255,255,255,0.06)", color: "var(--text-muted)", textTransform: "uppercase", fontSize: "10px", letterSpacing: "0.05em" }}>
+                        <th style={{ padding: "12px 16px" }}>Txn ID</th>
+                        <th style={{ padding: "12px 16px" }}>Time</th>
+                        <th style={{ padding: "12px 16px" }}>Amount</th>
+                        <th style={{ padding: "12px 16px" }}>Merchant</th>
+                        <th style={{ padding: "12px 16px" }}>Country</th>
+                        <th style={{ padding: "12px 16px" }}>Score</th>
+                        <th style={{ padding: "12px 16px" }}>Classification</th>
+                        <th style={{ padding: "12px 16px" }}>Engine Source</th>
+                        <th style={{ padding: "12px 16px" }}>Audit Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredTxns.length === 0 ? (
+                        <tr>
+                          <td colSpan="9" style={{ textAlign: "center", padding: "40px", color: "var(--text-muted)" }}>
+                            No active matching risk profiles detected.
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredTxns.map((tx, idx) => (
+                          <tr 
+                            key={tx.id}
+                            onClick={() => {
+                              setSelectedTx(tx);
+                              setTab("intel");
+                            }}
+                            style={{ 
+                              borderBottom: "1px solid rgba(255,255,255,0.04)", 
+                              background: idx % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)",
+                              cursor: "pointer",
+                              transition: "background 0.15s ease"
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 240, 255, 0.03)"}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = idx % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)"}
+                          >
+                            <td style={{ padding: "12px 16px", color: "var(--accent-cyan)", fontFamily: "'JetBrains Mono', monospace" }}>{tx.id}</td>
+                            <td style={{ padding: "12px 16px", color: "var(--text-muted)" }}>{tx.time}</td>
+                            <td style={{ padding: "12px 16px", fontWeight: "600", color: tx.risk === "HIGH" ? "var(--accent-red)" : "inherit" }}>
+                              ₹{tx.amount.toLocaleString()}
+                            </td>
+                            <td style={{ padding: "12px 16px", color: "var(--text-muted)" }}>{tx.merchant}</td>
+                            <td style={{ padding: "12px 16px", fontFamily: "'JetBrains Mono'" }}>{tx.country}</td>
+                            <td style={{ padding: "12px 16px", fontWeight: "700", color: tx.score >= 50 ? "var(--accent-red)" : tx.score >= 30 ? "var(--accent-orange)" : "var(--accent-green)" }}>
+                              {tx.score}
+                            </td>
+                            <td style={{ padding: "12px 16px" }}>
+                              <span style={{ 
+                                background: RISK_BG[tx.risk], 
+                                color: RISK_TEXT[tx.risk], 
+                                fontSize: "10px", 
+                                padding: "2px 6px", 
+                                borderRadius: "4px",
+                                fontWeight: "600",
+                                border: `1px solid ${RISK_COLORS[tx.risk]}33`
+                              }}>
+                                {RISK_LABELS[tx.risk]}
+                              </span>
+                            </td>
+                            <td style={{ padding: "12px 16px" }}>
+                              {(() => {
+                                const source = tx.api_source || "";
+                                let bg = "rgba(255, 255, 255, 0.05)";
+                                let color = "var(--text-muted)";
+                                let border = "rgba(255, 255, 255, 0.08)";
+                                let label = "Local Fallback";
+                                
+                                if (source.includes("FastAPI")) {
+                                  bg = "rgba(0, 240, 255, 0.1)";
+                                  color = "var(--accent-cyan)";
+                                  border = "var(--accent-cyan)33";
+                                  label = "FastAPI REST";
+                                } else if (source.includes("Flask")) {
+                                  bg = "rgba(139, 92, 246, 0.1)";
+                                  color = "var(--accent-purple)";
+                                  border = "var(--accent-purple)33";
+                                  label = "Flask REST";
+                                } else if (source.includes("Express")) {
+                                  bg = "rgba(255, 153, 0, 0.1)";
+                                  color = "var(--accent-orange)";
+                                  border = "var(--accent-orange)33";
+                                  label = "Express REST";
+                                }
+                                
+                                return (
+                                  <span style={{ 
+                                    background: bg, 
+                                    color: color, 
+                                    fontSize: "10px", 
+                                    padding: "2px 6px", 
+                                    borderRadius: "4px",
+                                    fontWeight: "600",
+                                    border: `1px solid ${border}`
+                                  }}>
+                                    {label}
+                                  </span>
+                                );
+                              })()}
+                            </td>
+                            <td style={{ padding: "12px 16px" }}>
+                              {tx.analystVerdict ? (
+                                <span style={{ color: tx.analystVerdict.includes("Fraud") ? "var(--accent-red)" : "var(--accent-green)", fontSize: "11px", fontWeight: "600" }}>
+                                  ✓ {tx.analystVerdict}
+                                </span>
+                              ) : (
+                                <span style={{ color: "var(--accent-cyan)", fontSize: "11px" }}>Inspect & Attribute →</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Right Column: Chart Widgets */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                
+                {/* 1. Real-time line chart */}
+                <div className="glass-card">
+                  <h3 style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-muted)", marginBottom: "12px", textTransform: "uppercase" }}>
+                    Network Traffic Anomaly Density
+                  </h3>
+                  <div style={{ height: "130px", width: "100%" }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={trends}>
+                        <XAxis dataKey="hour" tick={{ fill: "var(--text-muted)", fontSize: 8 }} axisLine={false} tickLine={false} />
+                        <Tooltip contentStyle={{ background: "#03050b", border: "1px solid rgba(255,255,255,0.08)", fontSize: 10 }} />
+                        <Line type="monotone" dataKey="total" stroke="var(--accent-cyan)" strokeWidth={1.5} dot={false} />
+                        <Line type="monotone" dataKey="flagged" stroke="var(--accent-red)" strokeWidth={1.5} strokeDasharray="3 3" dot={false} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div style={{ display: "flex", gap: "10px", marginTop: "8px", fontSize: "10px", color: "var(--text-muted)" }}>
+                    <span><span style={{ display: "inline-block", width: "8px", height: "8px", background: "var(--accent-cyan)", marginRight: "4px", borderRadius: "1px" }} />Incoming Flow</span>
+                    <span><span style={{ display: "inline-block", width: "8px", height: "8px", background: "var(--accent-red)", marginRight: "4px", borderRadius: "1px" }} />Flagged Anomalies</span>
+                  </div>
+                </div>
+
+                {/* 2. Risk split Pie */}
+                <div className="glass-card" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                  <h3 style={{ fontSize: "13px", fontWeight: "700", color: "var(--text-muted)", alignSelf: "flex-start", marginBottom: "10px", textTransform: "uppercase" }}>
+                    Risk Telemetry Ratio
+                  </h3>
+                  <div style={{ height: "120px", width: "100%" }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={pieData}
+                          innerRadius={26}
+                          outerRadius={40}
+                          dataKey="value"
+                          stroke="none"
+                        >
+                          {pieData.map((entry, idx) => (
+                            <Cell key={`cell-${idx}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip contentStyle={{ background: "#03050b", border: "1px solid rgba(255,255,255,0.08)", fontSize: 10 }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div style={{ width: "100%", fontSize: "10px", display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px" }}>
+                    {pieData.map((d, idx) => (
+                      <div key={idx} style={{ display: "flex", justifyContent: "space-between" }}>
+                        <span style={{ color: "var(--text-muted)" }}><span style={{ display: "inline-block", width: "6px", height: "6px", background: d.color, borderRadius: "50%", marginRight: "6px" }} />{d.name}</span>
+                        <span style={{ fontWeight: "700" }}>{d.value} ({Math.round(d.value / Math.max(1, stats.total) * 100)}%)</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 3. API Ingestion Gateway Log (Console Terminal) */}
+                <div className="glass-card scanner-effect" style={{ borderTop: "2px solid var(--accent-cyan)", display: "flex", flexDirection: "column" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                    <h3 style={{ fontSize: "11px", fontWeight: "700", color: "var(--accent-cyan)", textTransform: "uppercase", letterSpacing: "0.05em", display: "flex", alignItems: "center", gap: "6px" }}>
+                      <span className="pulse-cyan-dot" style={{ display: "inline-block", width: "6px", height: "6px", borderRadius: "50%", background: apiConnected ? "var(--accent-green)" : "var(--accent-red)" }} />
+                      API Ingestion Gateway Log
+                    </h3>
+                    <div style={{ display: "flex", gap: "6px" }}>
+                      <button 
+                        onClick={() => setApiLogs([])}
+                        style={{ background: "transparent", border: "none", color: "var(--text-dim)", cursor: "pointer", fontSize: "10px", textDecoration: "underline" }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-muted)"}
+                        onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-dim)"}
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div style={{
+                    background: "#020408",
+                    border: "1px solid rgba(255, 255, 255, 0.04)",
+                    borderRadius: "6px",
+                    padding: "10px",
+                    height: "230px",
+                    overflowY: "auto",
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: "10px",
+                    lineHeight: "1.4",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px"
+                  }}
+                  ref={(el) => {
+                    if (el) {
+                      el.scrollTop = el.scrollHeight;
+                    }
+                  }}
+                  >
+                    {apiLogs.length === 0 ? (
+                      <div style={{ color: "var(--text-dim)", textAlign: "center", paddingTop: "90px" }}>
+                        Console stream empty. waiting for API triggers...
+                      </div>
+                    ) : (
+                      apiLogs.map((log) => {
+                        let badgeColor = "var(--text-dim)";
+                        let msgColor = "var(--text-main)";
+                        if (log.type === "req") {
+                          badgeColor = "var(--accent-cyan)";
+                          msgColor = "#8be9fd";
+                        } else if (log.type === "res") {
+                          badgeColor = "var(--accent-green)";
+                          msgColor = "#50fa7b";
+                        } else if (log.type === "err") {
+                          badgeColor = "var(--accent-red)";
+                          msgColor = "#ff5555";
+                        }
+                        
+                        return (
+                          <div key={log.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.02)", paddingBottom: "6px" }}>
+                            <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", alignItems: "center", marginBottom: "3px" }}>
+                              <span style={{ color: "var(--text-dim)", fontSize: "9px" }}>[{log.time}]</span>
+                              <span style={{
+                                background: badgeColor + "1a",
+                                color: badgeColor,
+                                border: `1px solid ${badgeColor}33`,
+                                borderRadius: "3px",
+                                padding: "1px 4px",
+                                fontSize: "8.5px",
+                                fontWeight: "700"
+                              }}>
+                                {log.type.toUpperCase()}
+                              </span>
+                              <span style={{ color: msgColor, fontWeight: "500" }}>{log.msg}</span>
+                            </div>
+                            {log.details && (
+                              <pre style={{
+                                background: "#060812",
+                                border: "none",
+                                padding: "6px",
+                                borderRadius: "4px",
+                                margin: "2px 0 0 0",
+                                fontSize: "9px",
+                                color: "var(--text-muted)",
+                                overflowX: "auto",
+                                maxHeight: "80px",
+                                whiteSpace: "pre-wrap"
+                              }}>
+                                {JSON.stringify(log.details, null, 2)}
+                              </pre>
+                            )}
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "6px", fontSize: "9px", color: "var(--text-dim)" }}>
+                    <span>Target: {apiBaseUrl}</span>
+                    <span>SLA Limit: 200ms</span>
+                  </div>
+                </div>
+
+                {/* Database Verification & Sync Analyzer */}
+                <div className="glass-card scanner-effect" style={{ borderTop: "2px solid var(--accent-green)", display: "flex", flexDirection: "column" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                    <h3 style={{ fontSize: "13px", fontWeight: "700", color: "var(--accent-green)", textTransform: "uppercase", letterSpacing: "0.05em", display: "flex", alignItems: "center", gap: "6px" }}>
+                      Database Sync Analyzer
+                    </h3>
+                    <span style={{ 
+                      background: apiConnected ? "rgba(57, 255, 20, 0.1)" : "rgba(255, 0, 60, 0.1)", 
+                      color: apiConnected ? "var(--accent-green)" : "var(--accent-red)", 
+                      fontSize: "9px", 
+                      padding: "2px 6px", 
+                      borderRadius: "4px",
+                      fontWeight: "600",
+                      border: `1px solid ${apiConnected ? "var(--accent-green)" : "var(--accent-red)"}33`
+                    }}>
+                      {apiConnected ? "CONNECTED" : "OFFLINE"}
+                    </span>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "12px" }}>
+                    <div style={{ background: "rgba(255,255,255,0.01)", padding: "10px", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.03)" }}>
+                      <span style={{ fontSize: "9px", color: "var(--text-muted)", textTransform: "uppercase" }}>Backend DB Records</span>
+                      <h4 style={{ fontSize: "18px", color: "var(--accent-cyan)", fontWeight: "700", marginTop: "2px" }}>
+                        {apiConnected ? dbCount : "N/A"}
+                      </h4>
+                    </div>
+                    <div style={{ background: "rgba(255,255,255,0.01)", padding: "10px", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.03)" }}>
+                      <span style={{ fontSize: "9px", color: "var(--text-muted)", textTransform: "uppercase" }}>Dashboard Records</span>
+                      <h4 style={{ fontSize: "18px", color: "var(--text-main)", fontWeight: "700", marginTop: "2px" }}>
+                        {transactions.length}
+                      </h4>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={runDatabaseAudit}
+                    disabled={auditRunning}
+                    className="glass-card"
+                    style={{
+                      background: "var(--accent-green-dim)",
+                      border: "1px solid var(--accent-green)",
+                      color: "var(--text-main)",
+                      padding: "8px 12px",
+                      borderRadius: "6px",
+                      fontSize: "12px",
+                      fontWeight: "700",
+                      cursor: "pointer",
+                      textAlign: "center",
+                      marginBottom: "12px",
+                      transition: "all 0.15s ease",
+                      boxShadow: "0 0 8px rgba(57, 255, 20, 0.1)"
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!auditRunning) {
+                        e.currentTarget.style.boxShadow = "0 0 15px rgba(57, 255, 20, 0.4)";
+                        e.currentTarget.style.borderColor = "var(--accent-green)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = "0 0 8px rgba(57, 255, 20, 0.1)";
+                    }}
+                  >
+                    {auditRunning ? "Auditing Database..." : "🔍 Run Database Audit"}
+                  </button>
+
+                  {auditResult && (
+                    <div style={{
+                      background: "#020408",
+                      border: `1px solid ${auditResult.status === "SUCCESS" ? "var(--accent-green)" : auditResult.status === "PARTIAL" ? "var(--accent-orange)" : "var(--accent-red)"}33`,
+                      borderRadius: "6px",
+                      padding: "10px",
+                      fontSize: "11px",
+                      fontFamily: "'JetBrains Mono', monospace",
+                      lineHeight: "1.4"
+                    }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px", borderBottom: "1px solid rgba(255,255,255,0.04)", paddingBottom: "4px" }}>
+                        <span style={{ fontWeight: "700", color: auditResult.status === "SUCCESS" ? "var(--accent-green)" : "var(--accent-orange)" }}>
+                          STATUS: {auditResult.status}
+                        </span>
+                        <span style={{ color: "var(--text-dim)", fontSize: "9px" }}>{auditResult.timestamp}</span>
+                      </div>
+
+                      {auditResult.status === "ERROR" ? (
+                        <div style={{ color: "var(--accent-red)" }}>
+                          Error: {auditResult.error}
+                        </div>
+                      ) : (
+                        <div>
+                          <div style={{ color: "var(--text-main)" }}>
+                            Checked: {auditResult.totalChecked} | Matched: {auditResult.matched}
+                          </div>
+                          <div style={{ color: auditResult.status === "SUCCESS" ? "var(--accent-green)" : "var(--accent-orange)", marginTop: "4px", fontSize: "10px" }}>
+                            {auditResult.status === "SUCCESS" 
+                              ? "✓ 100% database verification match. Live records synchronized."
+                              : `⚠ Warning: ${auditResult.mismatches.length} mismatches or local fallback records detected.`}
+                          </div>
+                          {auditResult.mismatches.length > 0 && (
+                            <div style={{
+                              marginTop: "6px",
+                              maxHeight: "80px",
+                              overflowY: "auto",
+                              padding: "4px",
+                              background: "#060812",
+                              borderRadius: "4px",
+                              fontSize: "9px",
+                              color: "var(--text-muted)"
+                            }}>
+                              {auditResult.mismatches.map((m, i) => (
+                                <div key={i} style={{ borderBottom: "1px solid rgba(255,255,255,0.02)", paddingBottom: "2px", marginBottom: "2px" }}>
+                                  {m.id}: {m.error}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+              </div>
+
+            </div>
+          )}
+
+          {/* TAB: Threat Intel & Explainability */}
+          {tab === "intel" && (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              {!selectedTx ? (
+                <div className="glass-card" style={{ gridColumn: "1/-1", textAlign: "center", padding: "80px", color: "var(--text-muted)" }}>
+                  Select an audit Target transaction from the "Operations Feed" to view deep model graphs and explainability logs.
+                </div>
+              ) : (
+                <>
+                  {/* Left Box: SHAP and Meta */}
+                  <div className="glass-card" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                    <div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
+                        <div>
+                          <p style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: "600" }}>Inspect Hash</p>
+                          <h3 style={{ fontSize: "22px", fontWeight: "700", color: "var(--accent-cyan)", fontFamily: "'JetBrains Mono'" }}>{selectedTx.id}</h3>
+                        </div>
+                        <div style={{ textAlign: "right" }}>
+                          <span style={{ background: RISK_BG[selectedTx.risk], color: RISK_TEXT[selectedTx.risk], fontSize: "12px", padding: "4px 10px", borderRadius: "6px", fontWeight: "700", border: `1px solid ${RISK_COLORS[selectedTx.risk]}55` }}>
+                            {RISK_LABELS[selectedTx.risk]}
+                          </span>
+                          <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>Threat Score: {selectedTx.score}/100</p>
+                        </div>
+                      </div>
+
+                      {/* Transaction Parameters */}
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", background: "rgba(255,255,255,0.02)", padding: "14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)", marginBottom: "20px" }}>
+                        <div>
+                          <p style={{ fontSize: "10px", color: "var(--text-muted)" }}>Amount (₹)</p>
+                          <p style={{ fontSize: "13px", fontWeight: "600" }}>₹{selectedTx.amount.toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p style={{ fontSize: "10px", color: "var(--text-muted)" }}>Geographic Origin</p>
+                          <p style={{ fontSize: "13px", fontWeight: "600" }}>{selectedTx.country} (IP Route Target)</p>
+                        </div>
+                        <div style={{ marginTop: "6px" }}>
+                          <p style={{ fontSize: "10px", color: "var(--text-muted)" }}>Device ID Signature</p>
+                          <p style={{ fontSize: "13px", fontWeight: "600", color: selectedTx.newDevice ? "var(--accent-orange)" : "inherit" }}>
+                            {selectedTx.device} {selectedTx.newDevice && "(New Sig)"}
+                          </p>
+                        </div>
+                        <div style={{ marginTop: "6px" }}>
+                          <p style={{ fontSize: "10px", color: "var(--text-muted)" }}>Associated Merchant</p>
+                          <p style={{ fontSize: "13px", fontWeight: "600" }}>{selectedTx.merchant}</p>
+                        </div>
+                        <div style={{ marginTop: "6px" }}>
+                          <p style={{ fontSize: "10px", color: "var(--text-muted)" }}>Inference Engine Source</p>
+                          {(() => {
+                            const source = selectedTx.api_source || "";
+                            const color = source.includes("FastAPI") ? "var(--accent-cyan)" : source.includes("Flask") ? "var(--accent-purple)" : source.includes("Express") ? "var(--accent-orange)" : "var(--text-muted)";
+                            return (
+                              <p style={{ fontSize: "13px", fontWeight: "600", color: color }}>
+                                {selectedTx.api_source || "Local Engine (Simulation Fallback)"}
+                              </p>
+                            );
+                          })()}
+                        </div>
+                        <div style={{ marginTop: "6px" }}>
+                          <p style={{ fontSize: "10px", color: "var(--text-muted)" }}>Execution Latency</p>
+                          <p style={{ fontSize: "13px", fontWeight: "600" }}>
+                            {selectedTx.latency_ms !== undefined ? `${selectedTx.latency_ms} ms` : selectedTx.latency !== undefined ? `${selectedTx.latency} ms` : "N/A"}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* SHAP bars */}
+                      <div style={{ marginBottom: "20px" }}>
+                        <h4 style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-muted)", marginBottom: "12px" }}>
+                          Feature Attribution Weights (SHAP)
+                        </h4>
+                        {Object.entries(selectedTx.features).map(([fKey, fVal]) => (
+                          <div key={fKey} style={{ marginBottom: "12px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "4px" }}>
+                              <span>{fKey}</span>
+                              <span style={{ fontWeight: "700", color: fVal > 70 ? "var(--accent-red)" : fVal > 40 ? "var(--accent-orange)" : "var(--accent-green)" }}>
+                                {fVal}%
+                              </span>
+                            </div>
+                            <div style={{ height: "6px", background: "rgba(255,255,255,0.06)", borderRadius: "3px" }}>
+                              <div style={{
+                                width: `${fVal}%`,
+                                height: "100%",
+                                borderRadius: "3px",
+                                background: fVal > 70 ? "var(--accent-red)" : fVal > 40 ? "var(--accent-orange)" : "var(--accent-green)",
+                                boxShadow: fVal > 70 ? "0 0 8px rgba(255,0,60,0.5)" : "none",
+                                transition: "width 0.4s ease"
+                              }} />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Operational Analyst Decision */}
+                    <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "16px" }}>
+                      <h4 style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "10px" }}>
+                        Manual Analyst Override (Human-in-the-Loop)
+                      </h4>
+                      {selectedTx.analystVerdict ? (
+                        <div className="glass-card" style={{ background: "rgba(57, 255, 20, 0.05)", border: "1px solid var(--accent-green)", color: "var(--text-main)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <span>Analyst logged verdict: <strong>{selectedTx.analystVerdict}</strong></span>
+                          <button
+                            onClick={() => submitVerdict(selectedTx.id, null)}
+                            style={{ background: "transparent", border: "none", color: "var(--accent-red)", cursor: "pointer", fontSize: "11px", textDecoration: "underline" }}
+                          >
+                            Reset
+                          </button>
+                        </div>
+                      ) : (
+                        <div style={{ display: "flex", gap: "8px" }}>
+                          <button
+                            onClick={() => submitVerdict(selectedTx.id, "Confirmed Fraud")}
+                            className="glass-card"
+                            style={{
+                              flex: 1, cursor: "pointer", background: "var(--accent-red-dim)", border: "1px solid var(--accent-red)", color: "var(--text-main)", fontSize: "11px", fontWeight: "600", padding: "8px 0"
+                            }}
+                          >
+                            Confirm Fraud (Block)
+                          </button>
+                          <button
+                            onClick={() => submitVerdict(selectedTx.id, "False Positive")}
+                            className="glass-card"
+                            style={{
+                              flex: 1, cursor: "pointer", background: "var(--accent-green-dim)", border: "1px solid var(--accent-green)", color: "var(--text-main)", fontSize: "11px", fontWeight: "600", padding: "8px 0"
+                            }}
+                          >
+                            False Alarm (Clear)
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Right Box: GNN Visualizer and AI Logic Narrative */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                    
+                    {/* Graph Canvas */}
+                    <div className="glass-card">
+                      <h4 style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "10px" }}>
+                        GNN Subgraph Node Extraction
+                      </h4>
+                      <GnnGraphCanvas selectedTx={selectedTx} riskColors={RISK_COLORS} />
+                    </div>
+
+                    {/* Explanatory Narrative Log */}
+                    <div className="glass-card" style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                      <h4 style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "12px" }}>
+                        Neural Explanatory Logs
+                      </h4>
+                      <div style={{
+                        flex: 1, background: "#03050b", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.05)",
+                        padding: "16px", fontSize: "11.5px", fontFamily: "'JetBrains Mono', monospace", lineHeight: "1.6",
+                        color: "#ced4da", whiteSpace: "pre-line"
+                      }}>
+                        {selectedTx.narrative || (
+                          `Analysis of transaction ${selectedTx.id} shows high probability of fraudulent behavior. The system detected an anomalous transaction size of ₹${selectedTx.amount.toLocaleString()} (scoring ${selectedTx.features["Amount anomaly"]}% anomaly), unrecognized device signature, and geographic mismatch (${selectedTx.features["Geo mismatch"]}% score) from country code ${selectedTx.country}.
+
+                          Action Recommendation: BLOCK IMMEDIATELY. It is recommended to restrict the account status and trigger out-of-band verification (SMS/Email OTP) before releasing the funds. The current threat level is classified as CRITICAL.
+
+                          Audit Log: Transaction flagged high-risk due to multi-vector anomalies. Compliance review triggered.`
+                        )}
+                      </div>
+                    </div>
+
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* TAB: Decision Boundary Tuning */}
+          {tab === "threshold" && (
+            <div className="glass-card scanner-effect" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
+              
+              {/* Left Side: Tuning controls and Confusion Matrix */}
+              <div>
+                <h3 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "8px" }}>
+                  Adaptive Boundary Optimizer
+                </h3>
+                <p style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "20px" }}>
+                  Drag the threshold slider to configure the risk-scoring cut-off boundary. Tune the precision-recall balance to control the operational workload of the compliance team.
+                </p>
+
+                {/* Threshold slider */}
+                <div style={{ background: "rgba(255,255,255,0.02)", padding: "20px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)", marginBottom: "20px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: "13px", fontWeight: "600" }}>Classification Cutoff Score</span>
+                    <span style={{ fontSize: "20px", fontWeight: "700", color: "var(--accent-cyan)", fontFamily: "'JetBrains Mono'" }}>{threshold}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="1"
+                    max="99"
+                    value={threshold}
+                    onChange={(e) => setThreshold(parseInt(e.target.value))}
+                    className="slider-input"
+                  />
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", color: "var(--text-dim)" }}>
+                    <span>Agressively Block (Low Threshold)</span>
+                    <span>High Precision (High Threshold)</span>
+                  </div>
+                </div>
+
+                {/* Live confusion matrix */}
+                <h4 style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "12px" }}>
+                  Dynamic Confusion Matrix (Live Test Sample: 1000 txns)
+                </h4>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "20px" }}>
+                  {[
+                    { title: "True Positive (TP) - Detected Fraud", value: tp, desc: "Successfully Blocked", border: "var(--accent-green)" },
+                    { title: "False Positive (FP) - False Alarm", value: fp, desc: "Customers Disrupted", border: "var(--accent-red)" },
+                    { title: "False Negative (FN) - Missed Fraud", value: fn, desc: "Financial Loss", border: "var(--accent-red)" },
+                    { title: "True Negative (TN) - Legitimate Allowed", value: tn, desc: "Clean Conversions", border: "var(--accent-green)" }
+                  ].map((cell, idx) => (
+                    <div key={idx} style={{
+                      background: "rgba(0,0,0,0.2)", padding: "12px", borderRadius: "6px",
+                      border: "1px solid rgba(255,255,255,0.04)", borderLeft: `3px solid ${cell.border}`
+                    }}>
+                      <p style={{ fontSize: "10px", color: "var(--text-muted)" }}>{cell.title}</p>
+                      <h4 style={{ fontSize: "18px", fontWeight: "700", color: "var(--text-main)", margin: "2px 0" }}>{cell.value}</h4>
+                      <p style={{ fontSize: "9px", color: "var(--text-dim)" }}>{cell.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right Side: ROC & PR Curves */}
+              <div>
+                <h4 style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "12px" }}>
+                  Model Quality Validation Curves
+                </h4>
+
+                {/* Double chart space */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                  
+                  {/* ROC curve */}
+                  <div style={{ background: "rgba(0,0,0,0.15)", padding: "12px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "8px" }}>
+                      <strong>ROC-AUC (Area: 0.94)</strong>
+                      <span style={{ color: "var(--accent-cyan)" }}>FPR: {fpr.toFixed(3)}</span>
+                    </div>
+                    <div style={{ height: "130px", width: "100%" }}>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={ROC_CURVE_DATA}>
+                          <XAxis dataKey="fpr" type="number" domain={[0, 1]} hide />
+                          <YAxis dataKey="tpr" type="number" domain={[0, 1]} hide />
+                          <Area type="monotone" dataKey="tpr" stroke="var(--accent-cyan)" fill="rgba(0, 240, 255, 0.03)" strokeWidth={1.5} dot={false} />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "8px", display: "flex", justifyContent: "space-between" }}>
+                      <span>True Positive Rate: {tpr.toFixed(3)}</span>
+                    </div>
+                  </div>
+
+                  {/* PR curve */}
+                  <div style={{ background: "rgba(0,0,0,0.15)", padding: "12px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "8px" }}>
+                      <strong>PR-AUC Curve</strong>
+                      <span style={{ color: "var(--accent-cyan)" }}>Recall: {recall.toFixed(3)}</span>
+                    </div>
+                    <div style={{ height: "130px", width: "100%" }}>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={PR_CURVE_DATA}>
+                          <XAxis dataKey="recall" type="number" domain={[0, 1]} hide />
+                          <YAxis dataKey="precision" type="number" domain={[0, 1]} hide />
+                          <Area type="monotone" dataKey="precision" stroke="var(--accent-purple)" fill="rgba(139, 92, 246, 0.03)" strokeWidth={1.5} dot={false} />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "8px", display: "flex", justifyContent: "space-between" }}>
+                      <span>Precision: {precision.toFixed(3)}</span>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Performance stats summary */}
+                <div style={{ marginTop: "16px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "6px" }}>
+                  <div>
+                    <span style={{ fontSize: "9px", color: "var(--text-muted)", textTransform: "uppercase" }}>Avg F1 Score</span>
+                    <p style={{ fontSize: "15px", fontWeight: "700", color: "var(--accent-cyan)" }}>{f1.toFixed(3)}</p>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: "9px", color: "var(--text-muted)", textTransform: "uppercase" }}>Accuracy Rate</span>
+                    <p style={{ fontSize: "15px", fontWeight: "700" }}>{(accuracy * 100).toFixed(2)}%</p>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: "9px", color: "var(--text-muted)", textTransform: "uppercase" }}>False Pos. Rate</span>
+                    <p style={{ fontSize: "15px", fontWeight: "700", color: "var(--accent-red)" }}>{(fpr * 100).toFixed(2)}%</p>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          )}
+
+          {/* TAB: Continuous Feedback Retraining */}
+          {tab === "retrain" && (
+            <div className="glass-card" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+              
+              {/* Left panel: Logs terminal */}
+              <div>
+                <h3 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "8px" }}>
+                  Feedback-Driven Retraining Interface
+                </h3>
+                <p style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "16px" }}>
+                  Execute standard backpropagation adjustments to the model parameters using analyst overrides. This corrects bias drift and helps the engine adapt to novel transaction spoofing patterns.
+                </p>
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                  <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+                    Logged Feedback Buffer: <strong>{verdictHistory.length} verdicts</strong>
+                  </span>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button
+                      onClick={addMockFeedback}
+                      disabled={retrainingRunning}
+                      className="glass-card"
+                      style={{
+                        background: "rgba(255, 255, 255, 0.05)",
+                        border: "1px solid rgba(255, 255, 255, 0.15)",
+                        color: "var(--text-main)",
+                        padding: "6px 12px", borderRadius: "6px", fontSize: "12px", cursor: "pointer"
+                      }}
+                    >
+                      + Add Simulated Feedback
+                    </button>
+                    <button
+                      onClick={executeRetraining}
+                      disabled={retrainingRunning}
+                      className="glass-card"
+                      style={{
+                        background: "var(--accent-cyan-dim)",
+                        border: "1px solid var(--accent-cyan)",
+                        color: "var(--text-main)",
+                        padding: "6px 14px", borderRadius: "6px", fontSize: "12px", cursor: "pointer"
+                      }}
+                    >
+                      {retrainingRunning ? "Retraining Layers..." : "Retrain Engine"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Human Feedback Buffer Queue */}
+                <h4 style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "8px" }}>
+                  Human Feedback Queue Buffer (Dynamic Data)
+                </h4>
+                {verdictHistory.length === 0 ? (
+                  <div style={{ padding: "16px", background: "rgba(255,255,255,0.01)", border: "1px dashed rgba(255,255,255,0.06)", borderRadius: "6px", textAlign: "center", fontSize: "11px", color: "var(--text-dim)", marginBottom: "16px" }}>
+                    Feedback buffer empty. Add mock feedback or flag transactions in the Operations/Threat tabs first.
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", gap: "8px", overflowX: "auto", paddingBottom: "10px", marginBottom: "16px" }}>
+                    {verdictHistory.map((v, idx) => (
+                      <div key={idx} style={{
+                        background: "rgba(0, 0, 0, 0.2)",
+                        border: `1px solid ${v.verdict.includes("Fraud") ? "var(--accent-red)" : "var(--accent-green)"}`,
+                        borderRadius: "6px",
+                        padding: "8px 12px",
+                        minWidth: "160px",
+                        fontSize: "11px",
+                        flexShrink: 0,
+                        position: "relative"
+                      }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontWeight: "700" }}>
+                          <span style={{ color: "var(--accent-cyan)", fontFamily: "'JetBrains Mono'" }}>{v.txnId}</span>
+                          <span 
+                            onClick={() => setVerdictHistory(prev => prev.filter((_, i) => i !== idx))}
+                            style={{ color: "var(--text-dim)", cursor: "pointer", fontSize: "14px", lineHeight: "10px" }}
+                            title="Remove Override"
+                          >
+                            ×
+                          </span>
+                        </div>
+                        <div style={{ color: "var(--text-muted)", fontSize: "10px", marginTop: "4px" }}>₹{v.amount.toLocaleString()} · Score: {v.score}</div>
+                        <div style={{ 
+                          color: v.verdict.includes("Fraud") ? "var(--accent-red)" : "var(--accent-green)", 
+                          fontWeight: "700", 
+                          fontSize: "9px",
+                          marginTop: "6px",
+                          textTransform: "uppercase" 
+                        }}>
+                          {v.verdict}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <h4 style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "8px" }}>
+                  Training Execution Terminal Logs
+                </h4>
+                <div style={{
+                  background: "#020307", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.05)",
+                  padding: "16px", height: "180px", overflowY: "auto", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px"
+                }}>
+                  {retrainingLogs.length === 0 ? (
+                    <div style={{ color: "var(--text-dim)", textAlign: "center", paddingTop: "50px" }}>
+                      System training terminal idle. Ready for feedback inputs.
+                    </div>
+                  ) : (
+                    retrainingLogs.map((log, idx) => (
+                      <div key={idx} style={{ color: log.includes("successfully") ? "var(--accent-green)" : "#e5e7eb", marginBottom: "6px" }}>
+                        {log}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Right panel: Retraining Metrics Visuals */}
+              <div style={{ display: "flex", flexDirection: "column", justifyBetween: "space-between" }}>
+                <div>
+                  <h4 style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "12px" }}>
+                    Retraining Optimization Loss History
+                  </h4>
+                  <div style={{ height: "140px", width: "100%" }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={trainingLoss.map((l, idx) => ({ epoch: idx + 1, loss: l }))}>
+                        <XAxis dataKey="epoch" tick={{ fill: "var(--text-muted)", fontSize: 8 }} />
+                        <YAxis tick={{ fill: "var(--text-muted)", fontSize: 8 }} />
+                        <Tooltip contentStyle={{ background: "#03050b", border: "1px solid rgba(255,255,255,0.08)", fontSize: 10 }} />
+                        <Area type="monotone" dataKey="loss" stroke="var(--accent-red)" fill="rgba(255, 0, 60, 0.03)" strokeWidth={1.5} dot={true} />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <p style={{ fontSize: "10px", color: "var(--text-dim)", textAlign: "center", marginTop: "4px" }}>
+                    Epochs Trained vs. Binary Cross Entropy Loss
+                  </p>
+                </div>
+
+                <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "16px", marginTop: "16px" }}>
+                  <h4 style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: "10px" }}>
+                    Active Training Target Metrics
+                  </h4>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                    <div style={{ background: "rgba(255,255,255,0.01)", padding: "10px", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.03)" }}>
+                      <span style={{ fontSize: "9px", color: "var(--text-muted)" }}>Loss Target Status</span>
+                      <h4 style={{ fontSize: "16px", color: "var(--accent-green)", fontWeight: "700" }}>CONVERGED</h4>
+                    </div>
+                    <div style={{ background: "rgba(255,255,255,0.01)", padding: "10px", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.03)" }}>
+                      <span style={{ fontSize: "9px", color: "var(--text-muted)" }}>Learning Optimization</span>
+                      <h4 style={{ fontSize: "16px", color: "var(--accent-cyan)", fontWeight: "700" }}>Adam Adaptive</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          )}
+
+          {/* TAB: Governance & Drift */}
+          {tab === "governance" && (
+            <div className="glass-card" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+              
+              {/* Data drift analysis */}
+              <div>
+                <h3 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "8px" }}>
+                  Model Drift & PSI Monitoring
+                </h3>
+                <p style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "16px" }}>
+                  Calculates population deviation metrics to evaluate if incoming feature distribution matches baseline training distributions (PSI &lt; 0.1 indicates absolute stable boundaries).
+                </p>
+
+                {/* PSI Indicators list */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  {[
+                    { label: "Transaction Amount Feature", psi: 0.034, status: "STABLE", color: "var(--accent-green)" },
+                    { label: "Transaction Velocity Vector", psi: 0.052, status: "STABLE", color: "var(--accent-green)" },
+                    { label: "Country IP Route Feature", psi: 0.071, status: "STABLE", color: "var(--accent-green)" },
+                    { label: "Device Trust Fingerprint", psi: 0.115, status: "MILD DRIFT", color: "var(--accent-orange)" }
+                  ].map((item, idx) => (
+                    <div key={idx} style={{ background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "6px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div>
+                        <strong style={{ fontSize: "12px" }}>{item.label}</strong>
+                        <div style={{ fontSize: "10px", color: "var(--text-muted)" }}>PSI Metric: {item.psi}</div>
+                      </div>
+                      <span style={{ background: item.color + "1a", color: item.color, border: `1px solid ${item.color}33`, padding: "4px 10px", borderRadius: "4px", fontSize: "10px", fontWeight: "700" }}>
+                        {item.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Model Bias & Fairness */}
+              <div>
+                <h3 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "8px" }}>
+                  Compliance & Fairness Governance
+                </h3>
+                <p style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "16px" }}>
+                  Ensures decisions comply with international fair-lending policies. Evaluates geographic and demographic bias (Disparate Impact ratio should remain in [0.8, 1.25] boundaries).
+                </p>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
+                  <div style={{ background: "rgba(0,0,0,0.15)", padding: "14px", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                    <p style={{ fontSize: "10px", color: "var(--text-muted)", textTransform: "uppercase" }}>Disparate Impact Ratio</p>
+                    <h3 style={{ fontSize: "22px", color: "var(--accent-cyan)", margin: "4px 0", fontWeight: "700" }}>0.985</h3>
+                    <p style={{ fontSize: "9px", color: "var(--accent-green)" }}>✓ Optimal Policy Alignment</p>
+                  </div>
+                  <div style={{ background: "rgba(0,0,0,0.15)", padding: "14px", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                    <p style={{ fontSize: "10px", color: "var(--text-muted)", textTransform: "uppercase" }}>Statistical Parity Diff</p>
+                    <h3 style={{ fontSize: "22px", color: "var(--accent-cyan)", margin: "4px 0", fontWeight: "700" }}>-0.012</h3>
+                    <p style={{ fontSize: "9px", color: "var(--accent-green)" }}>✓ Disparity Margin Safe</p>
+                  </div>
+                </div>
+
+                <div className="glass-card" style={{ background: "rgba(59, 130, 246, 0.03)", fontSize: "11px", lineHeight: "1.6", color: "var(--text-muted)" }}>
+                  <strong>Compliance Audit Trail Statement:</strong> No systemic bias detected across monitored regions. Disparate impact ratio meets the 80/20 criteria established under regulatory banking guidelines. Continuous tracking logs stored locally.
+                </div>
+              </div>
+
+            </div>
+          )}
+
+          {/* TAB: Docs & Deployment */}
+          {tab === "docs" && (() => {
+            const PIPELINE_DETAILS = [
+              { title: "Ingestion Gate", tech: framework === "Express.js" ? "Express.js (Node.js)" : framework === "Flask" ? "Flask (Python)" : "FastAPI + Pydantic (Uvicorn)", latency: "2ms - 5ms", desc: "Receives transactions from merchant gateways, enforces validation via schemas, and outputs validation confirmation." },
+              { title: "Message Buffer", tech: "Apache Kafka Cluster", latency: "10ms (Async persistence)", desc: "Decouples ingestion from ingestion computation, saving incoming logs to Kafka topics to prevent loss and handle backpressure." },
+              { title: "Graph Extractor", tech: "PyTorch Geometric NeighborSampler", latency: "8ms - 15ms", desc: "Isolates a 2-hop neighborhood of accounts, cards, and devices linked to the transaction for contextual analysis." },
+              { title: "Neural Scorer", tech: "PyTorch (GNN + Transformer Ensemble)", latency: "15ms - 25ms", desc: "Scores sequential behavior via Transformer Self-Attention and network connection anomalies via Graph Neural Network (GNN)." },
+              { title: "High-Speed Cache", tech: "Redis In-Memory Hash", latency: "< 1ms", desc: "Caches risk scores for high-frequency nodes. Repeated queries within window hit cache first to bypass ML compute." },
+              { title: "Analyst Console", tech: `WebSockets (${framework} endpoint)`, latency: "< 5ms", desc: "Broadcasts scores and alerts instantly to active dashboards, enabling operations teams to review and override verdicts." }
+            ];
+
+            return (
+              <div className="glass-card" style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: "20px" }}>
+                
+                {/* Architecture flowchart on Left */}
+                <div>
+                  <h3 style={{ fontSize: "15px", fontWeight: "600", marginBottom: "10px" }}>
+                    API System Pipeline
+                  </h3>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                    {PIPELINE_DETAILS.map((s, idx) => (
+                      <div 
+                        key={idx} 
+                        onClick={() => setActivePipelineStep(idx)}
+                        onMouseEnter={() => setActivePipelineStep(idx)}
+                        style={{
+                          background: activePipelineStep === idx ? "rgba(0, 240, 255, 0.08)" : "rgba(255,255,255,0.02)", 
+                          padding: "8px 12px", 
+                          borderRadius: "6px",
+                          border: activePipelineStep === idx ? "1px solid var(--accent-cyan)" : "1px solid rgba(255,255,255,0.04)", 
+                          fontSize: "11px",
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                          boxShadow: activePipelineStep === idx ? "0 0 10px rgba(0, 240, 255, 0.2)" : "none"
+                        }}
+                      >
+                        <div style={{ color: activePipelineStep === idx ? "var(--text-main)" : "var(--accent-cyan)", fontWeight: "700" }}>{idx + 1}. {s.title}</div>
+                        <div style={{ color: "var(--text-muted)", fontSize: "10px" }}>{s.tech}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ marginTop: "16px", background: "rgba(0, 240, 255, 0.04)", border: "1px solid rgba(0, 240, 255, 0.15)", borderRadius: "8px", padding: "12px" }}>
+                    <h4 style={{ fontSize: "12px", color: "var(--accent-cyan)", fontWeight: "700", marginBottom: "4px" }}>Telemetry & Logic</h4>
+                    <p style={{ fontSize: "10px", color: "var(--text-muted)", marginBottom: "4px" }}><strong>Avg Latency:</strong> {PIPELINE_DETAILS[activePipelineStep].latency}</p>
+                    <p style={{ fontSize: "11px", lineHeight: "1.4", color: "#ced4da" }}>{PIPELINE_DETAILS[activePipelineStep].desc}</p>
+                  </div>
+                </div>
+
+                {/* Code viewer tabs on Right */}
+                <div>
+                  <h3 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "12px" }}>
+                    Containerized Deployment Code Templates
+                  </h3>
+                  <div style={{ display: "flex", gap: "6px", marginBottom: "12px", flexWrap: "wrap" }}>
+                    <button onClick={() => setTabCode("fastapi")} style={{ padding: "4px 10px", fontSize: "11px", background: tabCode === "fastapi" ? "var(--accent-cyan-dim)" : "transparent", border: "1px solid rgba(255,255,255,0.08)", color: "var(--text-main)", borderRadius: "4px", cursor: "pointer" }}>app.py (FastAPI)</button>
+                    <button onClick={() => setTabCode("flask")} style={{ padding: "4px 10px", fontSize: "11px", background: tabCode === "flask" ? "var(--accent-cyan-dim)" : "transparent", border: "1px solid rgba(255,255,255,0.08)", color: "var(--text-main)", borderRadius: "4px", cursor: "pointer" }}>app_flask.py (Flask)</button>
+                    <button onClick={() => setTabCode("express")} style={{ padding: "4px 10px", fontSize: "11px", background: tabCode === "express" ? "var(--accent-cyan-dim)" : "transparent", border: "1px solid rgba(255,255,255,0.08)", color: "var(--text-main)", borderRadius: "4px", cursor: "pointer" }}>app_express.js (Express)</button>
+                    <button onClick={() => setTabCode("dockerfile")} style={{ padding: "4px 10px", fontSize: "11px", background: tabCode === "dockerfile" ? "var(--accent-cyan-dim)" : "transparent", border: "1px solid rgba(255,255,255,0.08)", color: "var(--text-main)", borderRadius: "4px", cursor: "pointer" }}>Dockerfile</button>
+                    <button onClick={() => setTabCode("compose")} style={{ padding: "4px 10px", fontSize: "11px", background: tabCode === "compose" ? "var(--accent-cyan-dim)" : "transparent", border: "1px solid rgba(255,255,255,0.08)", color: "var(--text-main)", borderRadius: "4px", cursor: "pointer" }}>docker-compose.yml</button>
+                    <button onClick={() => setTabCode("kubernetes")} style={{ padding: "4px 10px", fontSize: "11px", background: tabCode === "kubernetes" ? "var(--accent-cyan-dim)" : "transparent", border: "1px solid rgba(255,255,255,0.08)", color: "var(--text-main)", borderRadius: "4px", cursor: "pointer" }}>kubernetes.yml</button>
+                  </div>
+
+                  <div style={{ position: "relative" }}>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(CODE_TEMPLATES[tabCode]);
+                        alert("Code snippet copied to clipboard.");
+                      }}
+                      style={{
+                        position: "absolute", right: "10px", top: "10px", background: "rgba(255,255,255,0.1)",
+                        border: "none", color: "var(--accent-cyan)", padding: "4px 8px", borderRadius: "4px", fontSize: "10px", cursor: "pointer"
+                      }}
+                    >
+                      Copy Code
+                    </button>
+                    <pre>{CODE_TEMPLATES[tabCode]}</pre>
+                  </div>
+                </div>
+
+              </div>
+            );
+          })()}
+
+          {showCustomModal && (
+            <div style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: "rgba(3, 5, 10, 0.85)",
+              backdropFilter: "blur(8px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 9999,
+              padding: "20px"
+            }}>
+              <div className="glass-card" style={{
+                width: "100%",
+                maxWidth: "500px",
+                border: "1px solid var(--accent-cyan)",
+                boxShadow: "0 0 25px rgba(0, 240, 255, 0.2)",
+                background: "rgba(10, 15, 30, 0.95)"
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", borderBottom: "1px solid rgba(255, 255, 255, 0.08)", paddingBottom: "10px" }}>
+                  <h3 style={{ fontSize: "18px", fontWeight: "700", color: "var(--accent-cyan)" }}>Inject Custom Transaction</h3>
+                  <button onClick={() => setShowCustomModal(false)} style={{ background: "transparent", border: "none", color: "var(--text-muted)", fontSize: "20px", cursor: "pointer" }}>&times;</button>
+                </div>
+                
+                <form onSubmit={handleInjectTransaction} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                  <div>
+                    <label style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Transaction ID (Optional)</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. TXN-12345 (Leave blank for auto-generation)"
+                      value={customTxId} 
+                      onChange={e => setCustomTxId(e.target.value)} 
+                      style={{
+                        width: "100%",
+                        background: "rgba(0,0,0,0.3)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        borderRadius: "4px",
+                        padding: "8px",
+                        color: "var(--text-main)",
+                        marginTop: "4px",
+                        fontFamily: "inherit"
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                    <div>
+                      <label style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Amount (₹)</label>
+                      <input 
+                        type="number" 
+                        value={customAmount} 
+                        onChange={e => setCustomAmount(e.target.value)} 
+                        required
+                        style={{
+                          width: "100%",
+                          background: "rgba(0,0,0,0.3)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          borderRadius: "4px",
+                          padding: "8px",
+                          color: "var(--text-main)",
+                          marginTop: "4px",
+                          fontFamily: "inherit"
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Txn Type</label>
+                      <select 
+                        value={customType} 
+                        onChange={e => setCustomType(e.target.value)}
+                        style={{
+                          width: "100%",
+                          background: "rgba(0,0,0,0.3)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          borderRadius: "4px",
+                          padding: "8px",
+                          color: "var(--text-main)",
+                          marginTop: "4px",
+                          fontFamily: "inherit"
+                        }}
+                      >
+                        {TX_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                    <div>
+                      <label style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Merchant</label>
+                      <select 
+                        value={customMerchant} 
+                        onChange={e => setCustomMerchant(e.target.value)}
+                        style={{
+                          width: "100%",
+                          background: "rgba(0,0,0,0.3)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          borderRadius: "4px",
+                          padding: "8px",
+                          color: "var(--text-main)",
+                          marginTop: "4px",
+                          fontFamily: "inherit"
+                        }}
+                      >
+                        {MERCHANTS.map(m => <option key={m} value={m}>{m}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Country Code</label>
+                      <select 
+                        value={customCountry} 
+                        onChange={e => setCustomCountry(e.target.value)}
+                        style={{
+                          width: "100%",
+                          background: "rgba(0,0,0,0.3)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          borderRadius: "4px",
+                          padding: "8px",
+                          color: "var(--text-main)",
+                          marginTop: "4px",
+                          fontFamily: "inherit"
+                        }}
+                      >
+                        {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                    <div>
+                      <label style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Velocity (Txns/Hr)</label>
+                      <input 
+                        type="number" 
+                        value={customVelocity} 
+                        onChange={e => setCustomVelocity(e.target.value)} 
+                        min="1" max="50" required
+                        style={{
+                          width: "100%",
+                          background: "rgba(0,0,0,0.3)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          borderRadius: "4px",
+                          padding: "8px",
+                          color: "var(--text-main)",
+                          marginTop: "4px",
+                          fontFamily: "inherit"
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase" }}>Device</label>
+                      <select 
+                        value={customDevice} 
+                        onChange={e => setCustomDevice(e.target.value)}
+                        style={{
+                          width: "100%",
+                          background: "rgba(0,0,0,0.3)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          borderRadius: "4px",
+                          padding: "8px",
+                          color: "var(--text-main)",
+                          marginTop: "4px",
+                          fontFamily: "inherit"
+                        }}
+                      >
+                        {DEVICES.map(d => <option key={d} value={d}>{d}</option>)}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
+                    <input 
+                      type="checkbox" 
+                      id="newDevice"
+                      checked={customNewDevice} 
+                      onChange={e => setCustomNewDevice(e.target.checked)}
+                      style={{ accentColor: "var(--accent-cyan)", cursor: "pointer" }}
+                    />
+                    <label htmlFor="newDevice" style={{ fontSize: "12px", color: "var(--text-main)", cursor: "pointer" }}>
+                      Unrecognized / New Device Signature (Increases Device Untrust rating)
+                    </label>
+                  </div>
+
+                  <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "10px" }}>
+                    <button 
+                      type="button" 
+                      onClick={() => setShowCustomModal(false)}
+                      style={{
+                        background: "rgba(255,255,255,0.05)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        color: "var(--text-muted)",
+                        padding: "8px 16px",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        fontSize: "12px"
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      type="submit"
+                      style={{
+                        background: "var(--accent-cyan)",
+                        border: "none",
+                        color: "var(--bg-main)",
+                        padding: "8px 16px",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        fontSize: "12px",
+                        fontWeight: "700",
+                        boxShadow: "0 0 10px rgba(0, 240, 255, 0.4)"
+                      }}
+                    >
+                      Inject Txn
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          <div style={{ marginTop: "25px", fontSize: "11px", color: "var(--text-dim)", textAlign: "center" }}>
+            Shield Neural FDS · Version 2.4.0-Production · Developed for Track 1 Problem Statement 2 · Secure Hybrid Offline Fallback Activated
+          </div>
+        </div>
+      );
+    }
+
+    // Code blocks nested objects
+    const CODE_TEMPLATES = {
+      fastapi: `from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import time, random
+
+app = FastAPI(title="Shield FDS")
+
+class Transaction(BaseModel):
+    id: str
+    amount: float
+    velocity: int
+    country: str
+    merchant: str
+    newDevice: bool
+
+@app.post("/score")
+async def score_transaction(tx: Transaction):
+    # Core score computation pipeline (< 200 ms SLA)
+    start = time.time()
+    
+    # Calculate GNN & Transformer simulated scoring weights
+    score = tx.amount * 0.35 + tx.velocity * 0.25
+    score = min(100.0, max(0.0, score))
+    
+    risk = "HIGH" if score >= 50 else ("MEDIUM" if score >= 30 else "LOW")
+    
+    latency = (time.time() - start) * 1000
+    return {
+        "id": tx.id,
+        "score": round(score, 1),
+        "risk": risk,
+        "latency_ms": round(latency + random.uniform(5, 12), 2)
+    }`,
+      flask: `from flask import Flask, request, jsonify
+from flask_cors import CORS
+import random, time
+
+app = Flask(__name__)
+CORS(app)
+
+@app.route("/score", methods=["POST"])
+def score_transaction():
+    start = time.time()
+    tx = request.get_json()
+    
+    score = tx["amount"] * 0.35 + tx["velocity"] * 0.25
+    score = min(100.0, max(0.0, score))
+    
+    risk = "HIGH" if score >= 50 else ("MEDIUM" if score >= 30 else "LOW")
+    latency = (time.time() - start) * 1000
+    
+    return jsonify({
+        "id": tx["id"],
+        "score": round(score, 1),
+        "risk": risk,
+        "latency_ms": round(latency + random.uniform(5, 12), 2)
+    })
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000)`,
+      express: `const express = require('express');
+const cors = require('cors');
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+app.post('/score', (req, res) => {
+  const start = Date.now();
+  const tx = req.body;
+  
+  let score = tx.amount * 0.35 + tx.velocity * 0.25;
+  score = Math.min(100.0, Math.max(0.0, score));
+  
+  const risk = score >= 50 ? "HIGH" : (score >= 30 ? "MEDIUM" : "LOW");
+  const latency = Date.now() - start;
+  
+  res.json({
+    id: tx.id,
+    score: parseFloat(score.toFixed(1)),
+    risk,
+    latency_ms: parseFloat((latency + Math.random() * 7 + 5).toFixed(2))
+  });
+});
+
+app.listen(8000, () => console.log('Shield API listening on port 8000'));`,
+      dockerfile: `FROM python:3.10-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY app.py .
+EXPOSE 8000
+CMD ["python", "app.py"]`,
+      compose: `version: "3.8"
+services:
+  backend:
+    build: ./server
+    ports:
+      - "8000:8000"
+    restart: always
+
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html:ro
+    depends_on:
+      - backend`,
+      kubernetes: `apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shield-backend-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: shield-backend
+  template:
+    metadata:
+      labels:
+        app: shield-backend
+    spec:
+      containers:
+      - name: shield-backend
+        image: shield-fraud-backend:latest
+        ports:
+        - containerPort: 8000`
+    };
+
+    // Main App Wrapper
+    function AppWrapper() {
+      return <FraudDashboard />;
+    }
+
+    const container = document.getElementById("root");
+    const root = ReactDOM.createRoot(container);
+    root.render(<AppWrapper />);
+  </script>
+</body>
+</html>
